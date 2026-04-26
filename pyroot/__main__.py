@@ -1,4 +1,6 @@
+lazy from .utils import PyRootError
 lazy from .analyze import _analyze
+lazy import traceback
 lazy import argparse
 lazy import sys
 lazy import os
@@ -45,9 +47,18 @@ def main():
     elif args.command == "analyze":
         try:
             print(_analyze(args.file, args.input, args.detailed, log=True))
-        except:
+        except PyRootError as e:
+            if e.user_mistake:
+                print(e.message)
+            else:
+                print("=== 오류 발생 ===")
+                print("다음 오류 메세지를 복사해 https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.")
+                print(f"ERROR {e.code} / {e.message}")
+                print(e.error_message)
+        except Exception:
             print("=== 오류 발생 ===")
-            print("다음 오류 메세지를 복사해 ")
+            print("다음 오류 메세지를 복사해 https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.")
+            traceback.print_exc()
     else:
         parser.print_help()
 
