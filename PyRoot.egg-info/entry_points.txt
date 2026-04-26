@@ -1,0 +1,3 @@
+[console_scripts]
+PyRoot = pyroot.__main__:main
+pyroot = pyroot.__main__:main
