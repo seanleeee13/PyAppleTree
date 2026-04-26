@@ -1,11 +1,11 @@
 lazy from collections import Counter
-lazy from ..utils import PyRootError
+lazy from ..utils import AppleTreeError
 lazy import traceback
 lazy import os
 
 def filter_samples(samples, target_file=None, detailed=False):
     if not target_file and not detailed:
-        raise PyRootError(
+        raise AppleTreeError(
             "analyze/metrics#filter_samples.1", message="Missing target file while not detailed",
             err_message="TypeError", um=False
         )
@@ -21,7 +21,7 @@ def filter_samples(samples, target_file=None, detailed=False):
 
 def count_filter_samples(samples, target_file=None, detailed=False):
     if not target_file and not detailed:
-        raise PyRootError(
+        raise AppleTreeError(
             "analyze/metrics#count_filter_samples.1", message="Missing target file while not detailed",
             err_message="TypeError", um=False
         )
@@ -105,10 +105,10 @@ def get_metrics(samples, target_file=None, detailed=False):
                 "magnification": get_magnification(sample_counter, loc[::2])
             }
             metrics["functions"][loc[::2]]["type"] = get_ftype(metrics["functions"][loc[::2]])
-    except PyRootError:
+    except AppleTreeError:
         raise
     except Exception as e:
-        raise PyRootError(
+        raise AppleTreeError(
             "analyze/metrics#get_metrics.1", message="Error while calculating metrics",
             err_message=traceback.format_exc(), um=False
         ) from e

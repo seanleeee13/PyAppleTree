@@ -1,7 +1,7 @@
 lazy from .run import analyze_new
 lazy from .metrics import get_metrics
 lazy from .report import get_func_report, get_line_report, get_report
-lazy from ..utils import PyRootError
+lazy from ..utils import AppleTreeError
 lazy import traceback
 
 _run = analyze_new
@@ -17,7 +17,7 @@ def _analyze(filename, input_file=None, detailed=False, log=True, color=True):
         metrics_data = _metrics(_run(filename, input_file, detailed, log, color), filename, detailed)
         report_data = _report(*metrics_data, color)
         return report_data
-    except PyRootError:
+    except AppleTreeError:
         raise
     except Exception:
-        raise PyRootError("analyze/analyze#_analyze.1", message="Error while analyze", err_message=traceback.format_exc(), um=False)
+        raise AppleTreeError("analyze/analyze#_analyze.1", message="Error while analyze", err_message=traceback.format_exc(), um=False)

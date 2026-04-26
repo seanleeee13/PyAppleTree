@@ -1,4 +1,4 @@
-lazy from ..utils import PyRootError, Color
+lazy from ..utils import AppleTreeError, Color
 lazy import traceback
 
 def get_func_report(metrics, code_data, color=True):
@@ -82,7 +82,7 @@ def get_m_func_report(metrics, color=True):
                     f"데이터의 크기가 커지면 부하가 커질 수 있습니다.{Color.END if color else ""}"
         return report
     except Exception as e:
-        raise PyRootError(
+        raise AppleTreeError(
             "analyze/report#get_m_func_report.1", message="Error while func report",
             err_message=traceback.format_exc(), um=False
         ) from e
@@ -126,7 +126,7 @@ def get_line_report(metrics, report, color=True):
 
 def get_report(report_data, color=True):
     try:
-        report = f"{Color.PURPLE + Color.BOLD if color else ""}===== PyRoot 분석 결과 ====={Color.END if color else ""}\n\n"
+        report = f"{Color.PURPLE + Color.BOLD if color else ""}===== PyAppleTree 분석 결과 ====={Color.END if color else ""}\n\n"
         report_overall = "\n\n".join(map(lambda k: "\n".join(k), report_data[2]))
         report += report_overall
         if report_overall.strip():
@@ -152,5 +152,8 @@ def get_report(report_data, color=True):
         report += "더욱 전문적인 분석을 위해서는 전문가에게 분석받는 것을 추천드립니다.\n"
         report += Color.END if color else ""
     except Exception as e:
-        raise PyRootError("analyze/report#get_report.1", message="Error while get report", err_message=traceback.format_exc(), um=False) from e
+        raise AppleTreeError(
+            "analyze/report#get_report.1", message="Error while get report",
+            err_message=traceback.format_exc(), um=False
+        ) from e
     return report

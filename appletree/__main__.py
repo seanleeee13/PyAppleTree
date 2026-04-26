@@ -1,4 +1,4 @@
-lazy from .utils import PyRootError, PyRootVersion, Color
+lazy from .utils import AppleTreeError, AppleTreeVersion, Color
 lazy from .analyze import _analyze
 lazy import traceback
 lazy import argparse
@@ -22,7 +22,7 @@ def main():
     if "!json" in sys.argv:
         print(json(sys.argv))
         return
-    parser = argparse.ArgumentParser(prog="PyRoot", description="Code Testing Program")
+    parser = argparse.ArgumentParser(prog="PyAppleTree", description="Code Testing Program")
     subparsers = parser.add_subparsers(dest="command", help="Select Mode")
     run_parser = subparsers.add_parser("run", help="Run Program")
     run_parser.add_argument("file", help="File Path", type=is_file)
@@ -52,22 +52,22 @@ def main():
     elif args.command == "analyze":
         try:
             print(_analyze(args.file, args.input, args.detailed, log=not args.without_log, color=not args.uncolored))
-        except PyRootError as e:
+        except AppleTreeError as e:
             if e.user_mistake:
                 print(e.message)
             else:
                 print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
                 print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
-                    f"https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
+                    f"https://github.com/seanleeee13/PyAppleTree/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
                 print(f"[ERROR] {e.code} / {e.message}")
-                print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [PyRoot] {PyRootVersion}")
+                print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
                 traceback.print_exc()
         except Exception:
             print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
             print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
-                f"https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
-            print("[ERROR] NO EXCEPT - NOT PyRootError")
-            print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [PyRoot] {PyRootVersion}")
+                f"https://github.com/seanleeee13/PyAppleTree/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
+            print("[ERROR] NO EXCEPT - NOT AppleTreeError")
+            print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
             traceback.print_exc()
     else:
         parser.print_help()

@@ -1,5 +1,5 @@
 lazy from profiling.sampling.binary_collector import BinaryCollector
-lazy from ..utils import tempfile_wrapper, clean, PyRootError, Color
+lazy from ..utils import tempfile_wrapper, clean, AppleTreeError, Color
 lazy from profiling.sampling.cli import _handle_run, COLLECTOR_MAP
 lazy from contextlib import redirect_stdout, redirect_stderr
 lazy from .report import get_m_func_report
@@ -34,33 +34,36 @@ class SampleArgs:
         self.async_aware = False
         self.diff_baseline = None
 
-class PyRootBinaryCollector(BinaryCollector):
-    _pyroot_cnt = 0
-    _pyroot_start_t = 0.0
-    _pyroot_msg = ""
-    _pyroot_msg_len = 0
-    _pyroot_samples = []
-    _pyroot_log = True
-    _pyroot_target = ""
-    _pyroot_detailed = False
-    _pyroot_color = True
+class AppleTreeBinaryCollector(BinaryCollector):
+    _appletree_cnt = 0
+    _appletree_start_t = 0.0
+    _appletree_msg = ""
+    _appletree_msg_len = 0
+    _appletree_samples = []
+    _appletree_log = True
+    _appletree_target = ""
+    _appletree_detailed = False
+    _appletree_color = True
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     def collect(self, stack_frames, timestamp_us=None):
-        if self._pyroot_log:
-            self._pyroot_cnt += 1
-            if self._pyroot_cnt % 50 == 0:
-                lst = get_m_func_report(get_metrics(self._pyroot_samples, self._pyroot_target, self._pyroot_detailed)[0], self._pyroot_color)
+        if self._appletree_log:
+            self._appletree_cnt += 1
+            if self._appletree_cnt % 50 == 0:
+                lst = get_m_func_report(get_metrics(
+                    self._appletree_samples, self._appletree_target, 
+                    self._appletree_detailed)[0], self._appletree_color
+                )
                 if lst:
-                    self._pyroot_msg = " ".join(lst)
-            seconds = int(time.perf_counter() - self._pyroot_start_t)
+                    self._appletree_msg = " ".join(lst)
+            seconds = int(time.perf_counter() - self._appletree_start_t)
             hours, remainder = divmod(seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
-            message = f"\r{Color.BLUE if self._pyroot_color else ""}#{self._pyroot_cnt} {hours:02d}:{minutes:02d}:{seconds:02d}" + \
-                f"{Color.CYAN if self._pyroot_color else ""}{" / " if self._pyroot_msg.strip() else ""}{self._pyroot_msg}"
+            message = f"\r{Color.BLUE if self._appletree_color else ""}#{self._appletree_cnt} {hours:02d}:{minutes:02d}:{seconds:02d}" + \
+                f"{Color.CYAN if self._appletree_color else ""}{" / " if self._appletree_msg.strip() else ""}{self._appletree_msg}"
             message_length = len(message)
-            message += " " * (max(0, self._pyroot_msg_len - len(message)) + 3)
-            self._pyroot_msg_len = message_length
+            message += " " * (max(0, self._appletree_msg_len - len(message)) + 3)
+            self._appletree_msg_len = message_length
             sys.__stdout__.write(message)
         try:
             for interp in stack_frames:
@@ -76,7 +79,7 @@ class PyRootBinaryCollector(BinaryCollector):
                             frame.location[0],
                             frame.funcname
                         ])
-                    self._pyroot_samples.append([*current_loc, full_stack])
+                    self._appletree_samples.append([*current_loc, full_stack])
         except:
             pass
         return super().collect(stack_frames, timestamp_us)
@@ -89,17 +92,17 @@ def get_prbc(log=True, color=True):
     def _get_prbc(*args, **kwargs):
         global used_prbc, prbc_args, prbc_kwargs
         if not used_prbc or prbc_args != args or prbc_kwargs != kwargs:
-            _used_prbc = PyRootBinaryCollector(*args, **kwargs)
-            _used_prbc._pyroot_log = log
-            _used_prbc._pyroot_color = color
+            _used_prbc = AppleTreeBinaryCollector(*args, **kwargs)
+            _used_prbc._appletree_log = log
+            _used_prbc._appletree_color = color
             if used_prbc:
-                _used_prbc._pyroot_cnt = used_prbc._pyroot_cnt
-                _used_prbc._pyroot_start_t = used_prbc._pyroot_start_t
-                _used_prbc._pyroot_msg = used_prbc._pyroot_msg
-                _used_prbc._pyroot_msg_len = used_prbc._pyroot_msg_len
-                _used_prbc._pyroot_samples = used_prbc._pyroot_samples
-                _used_prbc._pyroot_target = used_prbc._pyroot_target
-                _used_prbc._pyroot_detailed = used_prbc._pyroot_detailed
+                _used_prbc._appletree_cnt = used_prbc._appletree_cnt
+                _used_prbc._appletree_start_t = used_prbc._appletree_start_t
+                _used_prbc._appletree_msg = used_prbc._appletree_msg
+                _used_prbc._appletree_msg_len = used_prbc._appletree_msg_len
+                _used_prbc._appletree_samples = used_prbc._appletree_samples
+                _used_prbc._appletree_target = used_prbc._appletree_target
+                _used_prbc._appletree_detailed = used_prbc._appletree_detailed
             used_prbc = _used_prbc
             prbc_args = args
             prbc_kwargs = kwargs
@@ -128,17 +131,17 @@ def safe_open(filename, mode):
 
 def sample(target_file, input_file, output_file="output.prof", log=True, color=True):
     if not os.path.exists(target_file):
-        raise PyRootError(
+        raise AppleTreeError(
             "analyze/run#sample.2", message=f"타겟 파일 {target_file}이 존재하지 않습니다.",
             err_message="FileNotFoundError", um=True
         )
     if not os.path.exists(output_file):
-        raise PyRootError(
+        raise AppleTreeError(
             "analyze/run#sample.3", message=f"Output File No Exist",
             err_message="FileNotFoundError", um=False
         )
     if input_file and not os.path.exists(input_file):
-        raise PyRootError(
+        raise AppleTreeError(
             "analyze/run#sample.4", message=f"입력 파일 {input_file}이 존재하지 않습니다.",
             err_message="FileNotFoundError", um=True
         )
@@ -158,12 +161,12 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
                 _handle_run(SampleArgs(target_file, output_file))
         except SystemExit:
             pass
-        except PyRootError:
+        except AppleTreeError:
             raise
         except Exception as e:
             if log:
                 print()
-            raise PyRootError(
+            raise AppleTreeError(
                 "analyze/run#sample.1", message="Error while sample _handle_run",
                 err_message=traceback.format_exc(), um=False
             ) from e
@@ -177,24 +180,24 @@ def sample_tempfile(target_file, input_file=None, log=True, color=True):
 def analyze_new(filename, input_file, detailed=False, log=True, color=True):
     try:
         start = time.perf_counter()
-        PyRootBinaryCollector._pyroot_start_t = start
-        PyRootBinaryCollector._pyroot_target = filename
-        PyRootBinaryCollector._pyroot_detailed = detailed
+        AppleTreeBinaryCollector._appletree_start_t = start
+        AppleTreeBinaryCollector._appletree_target = filename
+        AppleTreeBinaryCollector._appletree_detailed = detailed
         while time.perf_counter() - start <= (5 if not detailed else 10):
             ret = None
             try:
                 ret = sample_tempfile(filename, input_file, log, color)
-            except PyRootError:
+            except AppleTreeError:
                 raise
             finally:
                 clean(ret)
         if log:
             print("\n")
-        return used_prbc._pyroot_samples
-    except PyRootError:
+        return used_prbc._appletree_samples
+    except AppleTreeError:
         raise
     except Exception as e:
-        raise PyRootError("analyze/run#analyze_new.1", message="Error while sampling", err_message=traceback.format_exc(), um=False) from e
+        raise AppleTreeError("analyze/run#analyze_new.1", message="Error while sampling", err_message=traceback.format_exc(), um=False) from e
     finally:
         clean_prbc()
 

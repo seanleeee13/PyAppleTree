@@ -3,9 +3,9 @@ lazy import tempfile
 lazy import atexit
 lazy import os
 
-PyRootVersion = "1.0.0"
+AppleTreeVersion = "1.0.0"
 
-class PyRootError(Exception):
+class AppleTreeError(Exception):
     def __init__(self, code, message, err_message, um):
         self.code = code
         self.message = message
@@ -36,12 +36,12 @@ def tempfile_wrapper(func, *args, index=0, binary=True):
     atexit.register(lambda: clean(name))
     try:
         return func(*args)
-    except PyRootError:
+    except AppleTreeError:
         clean(name)
         raise
     except:
         clean(name)
-        raise PyRootError(
+        raise AppleTreeError(
             code=f"analyze/utils#tempfile_wrapper<{func.__name__}>.1", message="Error in tempfile_wrapper",
             err_message=traceback.format_exc(), um=False
         )

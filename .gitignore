@@ -1,4 +1,4 @@
-pyroot/__pycache__
-pyroot/analyze/__pycache__
-PyRoot.egg-info
+appletree/__pycache__
+appletree/analyze/__pycache__
+PyAppleTree.egg-info
 .vscode
