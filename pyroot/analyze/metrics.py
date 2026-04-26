@@ -107,9 +107,9 @@ def get_metrics(samples, target_file=None, detailed=False):
             metrics["functions"][loc[::2]]["type"] = get_ftype(metrics["functions"][loc[::2]])
     except PyRootError:
         raise
-    except Exception:
+    except Exception as e:
         raise PyRootError(
             "analyze/metrics#get_metrics.1", message="Error while calculating metrics",
             err_message=traceback.format_exc(), um=False
-        )
+        ) from e
     return metrics, code_data

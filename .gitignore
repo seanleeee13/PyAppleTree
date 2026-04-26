@@ -1,0 +1,5 @@
+pyroot/__pycache__
+pyroot/analyze/__pycache__
+PyRoot.egg-info/*
+PyRoot.egg-info
+.vscode

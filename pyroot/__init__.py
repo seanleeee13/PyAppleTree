@@ -1,8 +1,9 @@
 lazy from .__main__ import main, json
+lazy from .utils import PyRootVersion
 
 def help():
-    print("PyRoot Version 1.0.0")
-    print("Usage: python -m code-tester [options] [file name]")
+    print(f"PyRoot Version {PyRootVersion}")
+    print("Usage: python -m pyroot [options] [file name]")
 
 __all__ = [
     "help",

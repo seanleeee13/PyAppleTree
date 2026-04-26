@@ -1,7 +1,8 @@
-lazy from .utils import PyRootError
+lazy from .utils import PyRootError, PyRootVersion, Color
 lazy from .analyze import _analyze
 lazy import traceback
 lazy import argparse
+lazy import platform
 lazy import sys
 lazy import os
 
@@ -21,7 +22,7 @@ def main():
     if "!json" in sys.argv:
         print(json(sys.argv))
         return
-    parser = argparse.ArgumentParser(prog="pyroot", description="Code Testing Program")
+    parser = argparse.ArgumentParser(prog="PyRoot", description="Code Testing Program")
     subparsers = parser.add_subparsers(dest="command", help="Select Mode")
     run_parser = subparsers.add_parser("run", help="Run Program")
     run_parser.add_argument("file", help="File Path", type=is_file)
@@ -35,6 +36,8 @@ def main():
     analyze_parser.add_argument("file", help="File Path", type=is_file)
     analyze_parser.add_argument("-i", "--input", help="Input File", type=is_file)
     analyze_parser.add_argument("-d", "--detailed", help="Detailed Analyzation", action="store_true")
+    analyze_parser.add_argument("-c", "--uncolored", help="Delete Color", action="store_true")
+    analyze_parser.add_argument("-l", "--without-log", help="Delete Log", action="store_true")
     args = parser.parse_args()
     if args.command == "run":
         print(f"실행 파일: {args.file}")
@@ -46,18 +49,23 @@ def main():
         print(f"입력 파일: {args.input}")
     elif args.command == "analyze":
         try:
-            print(_analyze(args.file, args.input, args.detailed, log=True))
+            print(_analyze(args.file, args.input, args.detailed, log=not args.without_log, color=not args.uncolored))
         except PyRootError as e:
             if e.user_mistake:
                 print(e.message)
             else:
-                print("=== 오류 발생 ===")
-                print("다음 오류 메세지를 복사해 https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.")
-                print(f"ERROR {e.code} / {e.message}")
-                print(e.error_message)
+                print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
+                print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
+                    f"https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
+                print(f"[ERROR] {e.code} / {e.message}")
+                print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [PyRoot] {PyRootVersion}")
+                traceback.print_exc()
         except Exception:
-            print("=== 오류 발생 ===")
-            print("다음 오류 메세지를 복사해 https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.")
+            print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
+            print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
+                f"https://github.com/seanleeee13/PyRoot/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
+            print("[ERROR] NO EXCEPT - NOT PyRootError")
+            print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [PyRoot] {PyRootVersion}")
             traceback.print_exc()
     else:
         parser.print_help()
