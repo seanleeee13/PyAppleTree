@@ -1,7 +1,7 @@
 lazy from .run import analyze_new
 lazy from .metrics import get_metrics
 lazy from .report import get_func_report, get_line_report, get_report
-lazy from ..utils import AppleTreeError
+lazy from ...appletree.utils import AppleTreeError
 lazy import traceback
 
 _run = analyze_new

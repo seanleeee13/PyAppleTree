@@ -1,41 +1,58 @@
+lazy from .locales import get_default_lang, validate_lang
 lazy from pathlib import Path
-# lazy import json
+lazy import json
 
 CONFIG_DIR = Path.home() / ".appletree"
 CONFIG_FILE = CONFIG_DIR / "config.json"
+CONFIG_CACHE = {}
 
-# def init_config():
-#     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-#     if not CONFIG_FILE.exists():
-#         save_config({"lang": "ko"})
+def get_default_setting():
+    return {"lang": get_default_lang()}
 
-# def get_config():
-#     init_config()
-#     try:
-#         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-#             return json.load(f)
-#     except (json.JSONDecodeError, OSError):
-#         return {"lang": "ko"}
+def validate_setting(key, value):
+    if key == "lang":
+        return validate_lang(value)
+    else:
+        return False
 
-# def save_config(config):
-#     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-#         json.dump(config, f, indent=4)
-
-import locale
-
-def get_default_lang():
-    """OS 설정에 따라 기본 언어(ko/en) 결정"""
-    try:
-        # 'ko_KR', 'en_US' 같은 값을 가져옵니다.
-        default_locale = locale.getdefaultlocale()[0] 
-        if default_locale and default_locale.startswith('ko'):
-            return "ko"
-    except:
-        pass
-    return "en" # 한국어가 아니면 무조건 글로벌 표준인 영어로!
+def validate_settings(config):
+    for k in config.keys():
+        if not validate_setting(k, config[k]):
+            return False
+    return True
 
 def init_config():
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     if not CONFIG_FILE.exists():
-        # 여기서 하드코딩 'ko' 대신 감지된 기본값을 넣습니다.
-        save_config({"lang": get_default_lang(), "theme": "dark"})
+        save_config(**get_default_setting(), cov=True)
+
+def get_config():
+    global CONFIG_CACHE
+    if not CONFIG_CACHE or not validate_settings(CONFIG_CACHE):
+        init_config()
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                CONFIG_CACHE = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            CONFIG_CACHE = get_default_setting()
+    if not validate_settings(CONFIG_CACHE):
+        default = get_default_setting()
+        for k in default:
+            if CONFIG_CACHE.get(k, "ERR") == "ERR" or not validate_setting(k, CONFIG_CACHE[k]):
+                CONFIG_CACHE[k] = default[k]
+        for k in set(CONFIG_CACHE.keys()) - set(default.keys()):
+            del CONFIG_CACHE[k]
+        save_config(**CONFIG_CACHE)
+    return CONFIG_CACHE
+
+def save_config(cov=False, **config):
+    if not cov:
+        new_config = get_config()
+    else:
+        new_config = {}
+    for key in config.keys():
+        if validate_setting(key, config[key]):
+            new_config[key] = config[key]
+            CONFIG_CACHE.update({key: config[key]})
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(new_config, f, indent=4)

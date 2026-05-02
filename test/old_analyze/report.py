@@ -1,4 +1,4 @@
-lazy from ..utils import AppleTreeError, Color
+lazy from ...appletree.utils import AppleTreeError, Color
 lazy import traceback
 
 def get_func_report(metrics, code_data, color=True):

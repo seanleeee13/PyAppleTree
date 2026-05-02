@@ -1,10 +1,11 @@
+lazy from ...appletree.utils import tempfile_wrapper, clean, AppleTreeError, Color
 lazy from profiling.sampling.binary_collector import BinaryCollector
-lazy from ..utils import tempfile_wrapper, clean, AppleTreeError, Color
 lazy from profiling.sampling.cli import _handle_run, COLLECTOR_MAP
 lazy from contextlib import redirect_stdout, redirect_stderr
 lazy from .report import get_m_func_report
 lazy from .metrics import get_metrics
 lazy from unittest.mock import patch
+lazy from ...appletree.locales import _
 lazy import subprocess
 lazy import traceback
 lazy import time

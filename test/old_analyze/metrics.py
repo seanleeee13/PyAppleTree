@@ -1,5 +1,5 @@
 lazy from collections import Counter
-lazy from ..utils import AppleTreeError
+lazy from ...appletree.utils import AppleTreeError
 lazy import traceback
 lazy import os
 

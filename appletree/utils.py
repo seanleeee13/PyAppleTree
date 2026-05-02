@@ -1,9 +1,11 @@
 lazy import traceback
 lazy import tempfile
 lazy import atexit
+lazy import shutil
+lazy import signal
 lazy import os
 
-AppleTreeVersion = "1.0.0"
+AppleTreeVersion = "0.1.0"
 
 class AppleTreeError(Exception):
     def __init__(self, code, message, err_message, um):
@@ -14,7 +16,7 @@ class AppleTreeError(Exception):
         super().__init__(self.message)
 
 class Color:
-    ORANGE = "\033[33m"
+    ORANGE = "\033[38;5;208m"
     GRAY = "\033[90m"
     RED = "\033[91m"
     GREEN = "\033[92m"
@@ -52,3 +54,17 @@ def clean(name):
             os.remove(name)
     except:
         pass
+
+class None_open:
+    def __enter__(self):
+        pass
+    def __exit__(self, *args):
+        pass
+    def __bool__(self):
+        return False
+
+def safe_open(filename, mode):
+    if not filename or not os.path.exists(filename):
+        return None_open()
+    else:
+        return open(filename, mode=mode)

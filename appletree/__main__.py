@@ -58,14 +58,14 @@ def main():
             else:
                 print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
                 print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
-                    f"https://github.com/seanleeee13/PyAppleTree/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
+                    f"https://github.com/seanleeee13/PyAppleTree/issues/new 에 올려 주세요.{Color.END if not args.uncolored else ""}")
                 print(f"[ERROR] {e.code} / {e.message}")
                 print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
                 traceback.print_exc()
         except Exception:
             print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
             print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
-                f"https://github.com/seanleeee13/PyAppleTree/issues/new에 올려 주세요.{Color.END if not args.uncolored else ""}")
+                f"https://github.com/seanleeee13/PyAppleTree/issues/new 에 올려 주세요.{Color.END if not args.uncolored else ""}")
             print("[ERROR] NO EXCEPT - NOT AppleTreeError")
             print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
             traceback.print_exc()
