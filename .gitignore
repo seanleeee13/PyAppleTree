@@ -1,4 +1,5 @@
 appletree/__pycache__
-appletree/analyze/__pycache__
+appletree/locales/__pycache__
+appletree/locales/*/__pycache__
 PyAppleTree.egg-info
 .vscode

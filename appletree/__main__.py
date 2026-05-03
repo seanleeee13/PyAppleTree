@@ -1,4 +1,5 @@
 lazy from .utils import AppleTreeError, AppleTreeVersion
+lazy from unittest.mock import patch
 lazy from .analyze import _analyze
 lazy from .locales import _
 lazy import traceback
@@ -9,7 +10,7 @@ lazy import os
 
 def is_file(path):
     if not os.path.isfile(path):
-        raise argparse.ArgumentTypeError(f"'{path}' is not a valid file path.")
+        raise argparse.ArgumentTypeError(_("argp_invalid_file_path") % path)
     return path
 
 def main():
@@ -23,25 +24,27 @@ def main():
     if "!json" in sys.argv:
         print(json(sys.argv))
         return
-    parser = argparse.ArgumentParser(prog="PyAppleTree", description="Code Testing Program")
-    subparsers = parser.add_subparsers(dest="command", help="Select Mode")
-    run_parser = subparsers.add_parser("run", help="Run Program")
-    run_parser.add_argument("file", help="File Path", type=is_file)
-    run_parser.add_argument("-i", "--input", help="Input File", type=is_file)
-    run_parser.add_argument("-t", "--timeout", type=float, help="Timeout")
-    run_parser.add_argument("-U", "--buffered", help="Activate Buffering")
-    run_parser.add_argument("-C", "--uncolored", help="Delete Color", action="store_true")
-    run_parser.add_argument("-E", "--no-translate", help="Delete Error Translation", action="store_true")
-    debug_parser = subparsers.add_parser("debug", help="Debug Program")
-    debug_parser.add_argument("file", help="File Path", type=is_file)
-    debug_parser.add_argument("-i", "--input", help="Input File", type=is_file)
-    analyze_parser = subparsers.add_parser("analyze", help="Detailed performance analysis")
-    analyze_parser.add_argument("file", help="File Path", type=is_file)
-    analyze_parser.add_argument("-i", "--input", help="Input File", type=is_file)
-    analyze_parser.add_argument("-d", "--detailed", help="Detailed Analyzation", action="store_true")
-    analyze_parser.add_argument("-C", "--uncolored", help="Delete Color", action="store_true")
-    analyze_parser.add_argument("-L", "--without-log", help="Delete Log", action="store_true")
-    args = parser.parse_args()
+    with patch("argparse._") as mocked_gettext:
+        mocked_gettext.side_effect = _
+        parser = argparse.ArgumentParser(prog="PyAppleTree", description=_("argp_appletree_desc"))
+        subparsers = parser.add_subparsers(dest="command", help=_("argp_select_mode"))
+        run_parser = subparsers.add_parser("run", help=_("argp_run"))
+        run_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
+        run_parser.add_argument("-i", "--input", help=_("argp_input_file"), type=is_file)
+        run_parser.add_argument("-t", "--timeout", type=float, help=_("argp_timeout"))
+        run_parser.add_argument("-U", "--buffered", help=_("argp_buffering"), action="store_true")
+        run_parser.add_argument("-C", "--uncolored", help=_("argp_uncolored"), action="store_true")
+        run_parser.add_argument("-E", "--no-translate", help=_("argp_no_err_translate"), action="store_true")
+        debug_parser = subparsers.add_parser("debug", help=_("argp_debug"))
+        debug_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
+        debug_parser.add_argument("-i", "--input", help=_("argp_input_file"), type=is_file)
+        analyze_parser = subparsers.add_parser("analyze", help=_("argp_analyze"))
+        analyze_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
+        analyze_parser.add_argument("-i", "--input", help=_("argp_input_file"), type=is_file)
+        analyze_parser.add_argument("-d", "--detailed", help=_("argp_detailed_anlz"), action="store_true")
+        analyze_parser.add_argument("-C", "--uncolored", help=_("argp_uncolored"), action="store_true")
+        analyze_parser.add_argument("-L", "--without-log", help=_("argp_without_log"), action="store_true")
+        args = parser.parse_args()
     if args.command == "run":
         print(f"실행 파일: {args.file}")
         print(f"입력 파일: {args.input}")

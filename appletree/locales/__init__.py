@@ -39,6 +39,8 @@ def get_translation(lang, word, color=True):
         tr = LOCALES_CACHE[lang].get(word, None)
     else:
         return
+    if tr == None:
+        return word
     flag = False
     if not isinstance(tr, list) and not isinstance(tr, tuple):
         tr = [tr]
@@ -62,6 +64,9 @@ def get_translation(lang, word, color=True):
     return tr
 
 def translate(word, color=True):
-    return get_translation(get_config()["lang"], word, color) or word
+    a = get_translation(get_config()["lang"], word, color)
+    if a == word and a not in ["%(heading)s:", "argument %(argument_name)s: %(message)s", "%(prog)s: error: %(message)s\n"]:
+        print(a)
+    return a
 
 _ = translate
