@@ -64,9 +64,6 @@ def get_translation(lang, word, color=True):
     return tr
 
 def translate(word, color=True):
-    a = get_translation(get_config()["lang"], word, color)
-    if a == word and a not in ["%(heading)s:", "argument %(argument_name)s: %(message)s", "%(prog)s: error: %(message)s\n"]:
-        print(a)
-    return a
+    return get_translation(get_config()["lang"], word, color)
 
 _ = translate
