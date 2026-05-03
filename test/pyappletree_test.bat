@@ -1,0 +1,1 @@
+python -m appletree analyze -i test/a.txt test/a.py

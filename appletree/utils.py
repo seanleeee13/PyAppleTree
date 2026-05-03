@@ -38,15 +38,17 @@ def tempfile_wrapper(func, *args, index=0, binary=True):
     atexit.register(lambda: clean(name))
     try:
         return func(*args)
+    except KeyboardInterrupt:
+        raise
     except AppleTreeError:
         clean(name)
         raise
-    except:
+    except Exception as e:
         clean(name)
         raise AppleTreeError(
             code=f"analyze/utils#tempfile_wrapper<{func.__name__}>.1", message="Error in tempfile_wrapper",
             err_message=traceback.format_exc(), um=False
-        )
+        ) from e
 
 def clean(name):
     try:

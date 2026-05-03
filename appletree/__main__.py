@@ -1,5 +1,6 @@
-lazy from .utils import AppleTreeError, AppleTreeVersion, Color
+lazy from .utils import AppleTreeError, AppleTreeVersion
 lazy from .analyze import _analyze
+lazy from .locales import _
 lazy import traceback
 lazy import argparse
 lazy import platform
@@ -52,20 +53,20 @@ def main():
     elif args.command == "analyze":
         try:
             print(_analyze(args.file, args.input, args.detailed, log=not args.without_log, color=not args.uncolored))
+        except KeyboardInterrupt:
+            pass
         except AppleTreeError as e:
             if e.user_mistake:
                 print(e.message)
             else:
-                print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
-                print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
-                    f"https://github.com/seanleeee13/PyAppleTree/issues/new 에 올려 주세요.{Color.END if not args.uncolored else ""}")
+                print(_("internal_error_title", not args.uncolored))
+                print(_("internal_error_report", not args.uncolored))
                 print(f"[ERROR] {e.code} / {e.message}")
                 print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
                 traceback.print_exc()
         except Exception:
-            print(f"{Color.RED + Color.BOLD if not args.uncolored else ""}=== 오류 발생 ==={Color.END if not args.uncolored else ""}")
-            print(f"{Color.PURPLE + Color.BOLD if not args.uncolored else ""}다음 오류 메세지를 복사해 " + \
-                f"https://github.com/seanleeee13/PyAppleTree/issues/new 에 올려 주세요.{Color.END if not args.uncolored else ""}")
+            print(_("internal_error_title", not args.uncolored))
+            print(_("internal_error_report", not args.uncolored))
             print("[ERROR] NO EXCEPT - NOT AppleTreeError")
             print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
             traceback.print_exc()

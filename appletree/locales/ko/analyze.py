@@ -1,6 +1,6 @@
 translate_data = {
     "analyze_data_count": [
-        "<yellow>데이터의 수가 작아 분석의 정확도가 떨어지거나 틀린 분석을 할 수 있습니다.<end>",
+        "<yellow>데이터의 수가 적어 분석의 정확도가 떨어지거나 틀린 분석을 할 수 있습니다.<end>",
         "<yellow>만약 데이터의 용량이 작다면 더 큰 데이터로 다시 실행해 보셔도 좋겠습니다.<end>"
     ],
     "analyze_freport_1_1": [
@@ -59,6 +59,6 @@ translate_data = {
         "<yellow>더욱 전문적인 분석을 위해서는 전문가에게 분석받는 것을 추천드립니다.<end>\n"
     ],
     "analyze_mfreport_ntitle": "<blue>#%(cnt)d %(time)s<cyan>%(slash)s<end>%(msg_part)s",
-    "analyze_run_no_target": "타겟 파일 %s이 존재하지 않습니다.",
-    "analyze_run_no_input": "입력 파일 %s이 존재하지 않습니다."
+    "analyze_run_no_target": "타겟 파일 %s가 존재하지 않습니다.",
+    "analyze_run_no_input": "입력 파일 %s가 존재하지 않습니다."
 }

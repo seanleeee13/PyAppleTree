@@ -5,9 +5,11 @@
 # print(fibo(int(input())))
 
 import random
+import time
 
 # 🏃 [5유형/3,2] 개별 실행은 미미하나 수만 번 호출됨
 def validate_item(weight, limit):
+    # time.sleep(0.1)
     return 0 <= weight <= limit
 
 # 🔥 [1유형/1,1] 리스트 정렬 및 조작 - 연산 집중형

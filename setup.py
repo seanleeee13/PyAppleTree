@@ -9,9 +9,7 @@ setup(
     entry_points={
         "console_scripts": [
             "pyappletree=appletree.__main__:main",
-            "PyAppleTree=appletree.__main__:main",
             "appletree=appletree.__main__:main",
-            "AppleTree=appletree.__main__:main"
         ],
     },
     author="seanleeee13",

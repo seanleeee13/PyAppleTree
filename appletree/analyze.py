@@ -1,4 +1,4 @@
-lazy from .utils import tempfile_wrapper, clean, AppleTreeError, safe_open, init_signal_handler, get_cached_width
+lazy from .utils import tempfile_wrapper, clean, AppleTreeError, safe_open
 lazy from profiling.sampling.binary_collector import BinaryCollector
 lazy from profiling.sampling.cli import _handle_run, COLLECTOR_MAP
 lazy from contextlib import redirect_stdout, redirect_stderr
@@ -59,7 +59,7 @@ class AppleTreeBinaryCollector(BinaryCollector):
             seconds = int(time.perf_counter() - self._appletree_start_t)
             hours, remainder = divmod(seconds, 3600)
             minutes, seconds = divmod(remainder, 60)
-            message = _("analyze_mfreport_ntitle", self._appletree_color) % {
+            message = "\r" + _("analyze_mfreport_ntitle", self._appletree_color) % {
                 "cnt": self._appletree_cnt,
                 "time": f"{hours:02d}:{minutes:02d}:{seconds:02d}",
                 "slash": " / " if self._appletree_msg.strip() else "",
@@ -120,7 +120,7 @@ def clean_prbc():
 def sample(target_file, input_file, output_file="output.prof", log=True, color=True):
     if not os.path.exists(target_file):
         raise AppleTreeError(
-            "analyze/run#sample.2", message=f"타겟 파일 {target_file}이 존재하지 않습니다.",
+            "analyze/run#sample.2", message=_("analyze_run_no_target") % target_file,
             err_message="FileNotFoundError", um=True
         )
     if not os.path.exists(output_file):
@@ -130,7 +130,7 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
         )
     if input_file and not os.path.exists(input_file):
         raise AppleTreeError(
-            "analyze/run#sample.4", message=f"입력 파일 {input_file}이 존재하지 않습니다.",
+            "analyze/run#sample.4", message=_("analyze_run_no_input") % input_file,
             err_message="FileNotFoundError", um=True
         )
     target_file = target_file.replace("/", "\\")
@@ -147,6 +147,10 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
             f = io.StringIO()
             with redirect_stdout(f), redirect_stderr(f):
                 _handle_run(SampleArgs(target_file, output_file))
+            if "Interrupted by user." in f.getvalue():
+                raise KeyboardInterrupt
+        except KeyboardInterrupt:
+            raise
         except SystemExit:
             pass
         except AppleTreeError:
@@ -171,14 +175,16 @@ def analyze_new(filename, input_file, detailed=False, log=True, color=True):
         AppleTreeBinaryCollector._appletree_start_t = start
         AppleTreeBinaryCollector._appletree_target = filename
         AppleTreeBinaryCollector._appletree_detailed = detailed
-        while time.perf_counter() - start <= (5 if not detailed else 10):
+        while time.perf_counter() - start <= (200 if not detailed else 10):
             ret = None
             try:
                 ret = sample_tempfile(filename, input_file, log, color)
-            except AppleTreeError:
-                raise
             finally:
                 clean(ret)
+        if log:
+            print("\n")
+        return used_prbc._appletree_samples
+    except KeyboardInterrupt:
         if log:
             print("\n")
         return used_prbc._appletree_samples
@@ -291,6 +297,8 @@ def get_metrics(samples, target_file=None, detailed=False):
                 "magnification": get_magnification(sample_counter, loc[::2])
             }
             metrics["functions"][loc[::2]]["type"] = get_ftype(metrics["functions"][loc[::2]])
+    except KeyboardInterrupt:
+        raise
     except AppleTreeError:
         raise
     except Exception as e:
@@ -348,6 +356,8 @@ def get_m_func_report(metrics, color=True):
             case (4, 1):
                 report[2] = _("analyze_mfreport_4_1", color)
         return report
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         raise AppleTreeError(
             "analyze/report#get_m_func_report.1", message="Error while func report",
@@ -405,6 +415,8 @@ def get_report(report_data, color=True):
                 report += "  " + i + "\n"
             report += "\n"
         report += "".join(_("analyze_report_warning"))
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         raise AppleTreeError(
             "analyze/report#get_report.1", message="Error while get report",
@@ -426,6 +438,8 @@ def _analyze(filename, input_file=None, detailed=False, log=True, color=True):
         report_data = _report(*metrics_data, color)
         return report_data
     except AppleTreeError:
+        raise
+    except KeyboardInterrupt:
         raise
     except Exception as e:
         raise AppleTreeError("analyze/analyze#_analyze.1", message="Error while analyze", err_message=traceback.format_exc(), um=False) from e
