@@ -4,7 +4,9 @@
 - 색 배합 조절
 - analyze에 기본 tachyon 기능 추가
 - analyze에 리포트를 파일로 저장 추가
-- _ 함수 기본값으로 gettext _ 함수 넣기
+- _ 함수 기본값으로 gettext _ 함수 넣기 [완료]
 - 데이터 분석 파트 C++ pybind11로 이전
+    - 밸리데이팅: 파이썬 (sys.intern, is 연산자)
+    - 카운팅: C++ (unordered_map)
 - 실시간 메세지가 잘리면 도배됨
 - 분석 중 keyboardinterrupt 처리 [완료]
