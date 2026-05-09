@@ -8,5 +8,6 @@
 - 데이터 분석 파트 C++ pybind11로 이전
     - 밸리데이팅: 파이썬 (sys.intern, is 연산자)
     - 카운팅: C++ (unordered_map)
+    - Rust?
 - 실시간 메세지가 잘리면 도배됨
 - 분석 중 keyboardinterrupt 처리 [완료]

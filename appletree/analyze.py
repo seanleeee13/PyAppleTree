@@ -175,7 +175,7 @@ def analyze_new(filename, input_file, detailed=False, log=True, color=True):
         AppleTreeBinaryCollector._appletree_start_t = start
         AppleTreeBinaryCollector._appletree_target = filename
         AppleTreeBinaryCollector._appletree_detailed = detailed
-        while time.perf_counter() - start <= (200 if not detailed else 10):
+        while time.perf_counter() - start <= (5 if not detailed else 10):
             ret = None
             try:
                 ret = sample_tempfile(filename, input_file, log, color)
@@ -414,7 +414,7 @@ def get_report(report_data, color=True):
             for i in report_data[1][key][1:]:
                 report += "  " + i + "\n"
             report += "\n"
-        report += "".join(_("analyze_report_warning"))
+        report += "".join(_("analyze_report_warning", color))
     except KeyboardInterrupt:
         raise
     except Exception as e:

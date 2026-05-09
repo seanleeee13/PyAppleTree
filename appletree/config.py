@@ -37,8 +37,9 @@ def get_config():
             CONFIG_CACHE = get_default_setting()
     if not validate_settings(CONFIG_CACHE):
         default = get_default_setting()
+        ERROR = sentinel("ERROR")
         for k in default:
-            if CONFIG_CACHE.get(k, "ERR") == "ERR" or not validate_setting(k, CONFIG_CACHE[k]):
+            if CONFIG_CACHE.get(k, ERROR) is ERROR or not validate_setting(k, CONFIG_CACHE[k]):
                 CONFIG_CACHE[k] = default[k]
         for k in set(CONFIG_CACHE.keys()) - set(default.keys()):
             del CONFIG_CACHE[k]

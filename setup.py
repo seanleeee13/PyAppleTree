@@ -1,9 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="PyAppleTree",
     version="1.0.0",
-    packages=find_packages(exclude=[".vscode", "test"]),
+    packages=["appletree"],
     python_requires=">=3.15",
     install_requires=[],
     entry_points={
