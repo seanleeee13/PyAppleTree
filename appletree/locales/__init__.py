@@ -40,7 +40,7 @@ def get_translation(lang, word, color=True):
     else:
         return
     if tr == None:
-        return word
+        return "word"
     flag = False
     if not isinstance(tr, list) and not isinstance(tr, tuple):
         tr = [tr]
@@ -64,6 +64,9 @@ def get_translation(lang, word, color=True):
     return tr
 
 def translate(word, color=True):
-    return get_translation(get_config()["lang"], word, color)
+    a = get_translation(get_config()["lang"], word, color)
+    if a == "word":
+        print(word)
+    return a
 
 _ = translate

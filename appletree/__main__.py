@@ -13,7 +13,7 @@ def is_file(path):
         raise argparse.ArgumentTypeError(_("argp_invalid_file_path") % path)
     return path
 
-def main():
+def main(name="appletree"):
     commands = ["run", "debug", "analyze"]
     if len(sys.argv) > 1 and not any(cmd in sys.argv for cmd in commands):
         for arg in sys.argv[1:]:
@@ -26,7 +26,7 @@ def main():
         return
     with patch("argparse._") as mocked_gettext:
         mocked_gettext.side_effect = _
-        parser = argparse.ArgumentParser(prog="PyAppleTree", description=_("argp_appletree_desc"))
+        parser = argparse.ArgumentParser(prog=name, description=_("argp_appletree_desc"))
         subparsers = parser.add_subparsers(dest="command", help=_("argp_select_mode"))
         run_parser = subparsers.add_parser("run", help=_("argp_run"))
         run_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
@@ -81,4 +81,4 @@ def json(args):
     # parser 코드들
 
 if __name__ == "__main__":
-    main()
+    main(name="python -m appletree")
