@@ -21,7 +21,7 @@ translate_data = {
     "show this help message and exit": "도움말 출력",
     "%(heading)s:": "%(heading)s:",
     "argument %(argument_name)s: %(message)s": "argument %(argument_name)s: %(message)s",
-    "%(prog)s: error: %(message)s\n": "%(prog)s: 에러: %(message)s\n",
+    "%(prog)s: error: %(message)s\n": "%(prog)s: 오류: %(message)s\n",
     "the following arguments are required: %s": "필수 인자 %s이 입력되지 않았습니다.",
     "unrecognized arguments: %s": "알 수 없는 인자가 있습니다: %s"
 }
