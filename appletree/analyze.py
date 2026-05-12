@@ -120,7 +120,7 @@ def clean_prbc():
 def sample(target_file, input_file, output_file="output.prof", log=True, color=True):
     if not os.path.exists(target_file):
         raise AppleTreeError(
-            "analyze/run#sample.2", message=_("analyze_run_no_target") % target_file,
+            "analyze/run#sample.2", message=_("analyze_run_no_target") % {"target_file": target_file},
             err_message="FileNotFoundError", um=True
         )
     if not os.path.exists(output_file):
@@ -130,7 +130,7 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
         )
     if input_file and not os.path.exists(input_file):
         raise AppleTreeError(
-            "analyze/run#sample.4", message=_("analyze_run_no_input") % input_file,
+            "analyze/run#sample.4", message=_("analyze_run_no_input") % {"input_file": input_file},
             err_message="FileNotFoundError", um=True
         )
     target_file = target_file.replace("/", "\\")
@@ -339,7 +339,7 @@ def get_m_func_report(metrics, color=True):
                 top = [metrics["functions"][key]["sample%"], key]
         if top == [0, ()]:
             return
-        report[1] = (_("analyze_mfreport_func", color) if not key[1].startswith("<") else _("analyze_mfreport_func_br", color)) % key[1]
+        report[1] = _("analyze_mfreport_func", color) % {"func": key[1], "br": key[1]}
         match metrics["functions"][key]["type"]:
             case (1, 1):
                 report[2] = _("analyze_mfreport_1_1", color)
@@ -398,19 +398,15 @@ def get_report(report_data, color=True):
             report += "\n\n"
         report += _("analyze_freport_title", color)
         for key in report_data[0].keys():
-            report += _("analyze_freport_func", color) % key[1] if not key[1].startswith("<") else _("analyze_freport_func_br", color) % key[1]
-            report += "\n"
+            report += _("analyze_freport_func", color) % {"func": key[1], "br": key[1]} + "\n"
             for i in report_data[0][key]:
                 report += "  " + i + "\n"
             report += "\n"
         report += _("analyze_lreport_title", color)
         for key in report_data[1].keys():
-            report += _("analyze_lreport_line_rank", color) % key + str(report_data[1][key][0][:2][0])
-            report += ", "
-            report += _("analyze_lreport_line", color) % report_data[1][key][0][:2][1]
-            report += _("analyze_lreport_line_func", color) % report_data[1][key][0][2] \
-                if not report_data[1][key][0][2].startswith("<") \
-                else _("analyze_lreport_line_func_br", color) % report_data[1][key][0][2]
+            report += _("analyze_lreport_line_rank", color) % {"rank": key} + str(report_data[1][key][0][:2][0]) + ", "
+            report += _("analyze_lreport_line", color) % {"line": report_data[1][key][0][:2][1]}
+            report += _("analyze_lreport_line_func", color) % {"func": report_data[1][key][0][2], "br": report_data[1][key][0][2]}
             for i in report_data[1][key][1:]:
                 report += "  " + i + "\n"
             report += "\n"
@@ -422,7 +418,7 @@ def get_report(report_data, color=True):
             "analyze/report#get_report.1", message="Error while get report",
             err_message=traceback.format_exc(), um=False
         ) from e
-    return report
+    return str(report)
 
 _run = analyze_new
 _metrics = get_metrics

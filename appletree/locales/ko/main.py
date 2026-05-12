@@ -1,6 +1,6 @@
 translate_data = {
     "internal_error_title": "<red><bold>=== 오류 발생 ===<end>",
-    "internal_error_report": "<purple><bold>다음 오류 메세지를 복사해 %s 에 올려 주세요.<end>",
+    "internal_error_report": "<purple><bold>다음 오류 메세지를 복사해 %(url)s 에 올려 주세요.<end>",
     "argp_appletree_desc": "코드 테스팅 & 환경 구축 프로그램",
     "argp_select_mode": "모드 선택",
     "argp_run": "파이썬 코드 실행",
@@ -14,13 +14,13 @@ translate_data = {
     "argp_analyze": "파이썬 코드 분석",
     "argp_detailed_anlz": "상세 분석 모드",
     "argp_without_log": "실행 로그 제거",
-    "argp_invalid_file_path": "'%s'는 존재하지 않는 파일입니다.",
+    "argp_invalid_file_path": "'%(path)s'는 존재하지 않는 파일입니다.",
     "usage: ": "사용법: ",
     "positional arguments": "필수 인자",
     "options": "선택적 인자",
     "show this help message and exit": "도움말 출력",
     "%(heading)s:": "%(heading)s:",
-    "argument %(argument_name)s: %(message)s": "argument %(argument_name)s: %(message)s",
+    "argument %(argument_name)s: %(message)s": "%(argument_name)s 인자: %(message)s",
     "%(prog)s: error: %(message)s\n": "%(prog)s: 오류: %(message)s\n",
     "the following arguments are required: %s": "필수 인자 %s이 입력되지 않았습니다.",
     "unrecognized arguments: %s": "알 수 없는 인자가 있습니다: %s"

@@ -32,8 +32,7 @@ translate_data = {
         "<green>데이터의 크기가 커지면 부하가 커질 수 있습니다.<end>"
     ],
     "analyze_mfreport_title": "<purple>현재 분석된 점유율 1위:<end>",
-    "analyze_mfreport_func": "<blue>%s 함수<end> <cyan>/<end>",
-    "analyze_mfreport_func_br": "<blue>%s<end> <cyan>/<end>",
+    "analyze_mfreport_func": "<blue>%(func)s<!br= 함수><end> <cyan>/<end>",
     "analyze_mfreport_1_1": "<red><bold>연산 폭탄 - 순수 연산량이 많습니다. 우선적으로 수정해 주세요.<end>",
     "analyze_mfreport_2_1": "<orange><bold>복합적 병목 - 순수 연산량도 많고, 다른 함수 호출 횟수도 많습니다. 간단한 재귀함수일 가능성이 있습니다.<end>",
     "analyze_mfreport_2_2": "<orange><bold>실행의 입구 - 다른 무거운 함수들을 실행시키는 함수로, 이 함수가 호출하는 함수를 수정해야 합니다.<end>",
@@ -47,18 +46,16 @@ translate_data = {
     "analyze_lreport_normal": "<green>정상 - 이 줄은 비교적 정상적이나, 연산량이 다소 많을 수 있습니다.<end>",
     "analyze_report_title": "<purple><bold>===== PyAppleTree 분석 결과 =====<end>\n\n",
     "analyze_freport_title": "<cyan><bold>=== 함수 분석 ===<end>\n\n",
-    "analyze_freport_func": "<purple>%s 함수:<end>",
-    "analyze_freport_func_br": "<purple>%s:<end>",
+    "analyze_freport_func": "<purple>%(func)s<!br= 함수>:<end>",
     "analyze_lreport_title": "<cyan><bold>=== 줄 분석 ===<end>\n\n",
-    "analyze_lreport_line_rank": "<purple>점유율 %d위:<cyan> ",
-    "analyze_lreport_line": "%d번 줄 ",
-    "analyze_lreport_line_func": "(%s 함수)<end>\n",
-    "analyze_lreport_line_func_br": "(%s)<end>\n",
+    "analyze_lreport_line_rank": "<purple>점유율 %(rank)d위:<cyan> ",
+    "analyze_lreport_line": "%(line)d번 줄 ",
+    "analyze_lreport_line_func": "(%(func)s)<!br= 함수><end>\n",
     "analyze_report_warning": [
         "<yellow>코드의 종류와 목적에 따라 분석의 기준은 달라질 수 있습니다.<end>\n",
         "<yellow>더욱 전문적인 분석을 위해서는 전문가에게 분석받는 것을 추천드립니다.<end>\n"
     ],
     "analyze_mfreport_ntitle": "<blue>#%(cnt)d %(time)s<cyan>%(slash)s<end>%(msg_part)s",
-    "analyze_run_no_target": "타겟 파일 %s가 존재하지 않습니다.",
-    "analyze_run_no_input": "입력 파일 %s가 존재하지 않습니다."
+    "analyze_run_no_target": "타겟 파일 %(target_file)s가 존재하지 않습니다.",
+    "analyze_run_no_input": "입력 파일 %(input_file)s가 존재하지 않습니다."
 }

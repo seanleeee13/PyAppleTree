@@ -10,7 +10,7 @@ lazy import os
 
 def is_file(path):
     if not os.path.isfile(path):
-        raise argparse.ArgumentTypeError(_("argp_invalid_file_path") % path)
+        raise argparse.ArgumentTypeError(_("argp_invalid_file_path") % {"path": path})
     return path
 
 def main(name="appletree"):
@@ -63,13 +63,15 @@ def main(name="appletree"):
                 print(e.message)
             else:
                 print(_("internal_error_title", not args.uncolored))
-                print(_("internal_error_report", not args.uncolored))
+                print(_("internal_error_report", not args.uncolored) % {"url": "htpps://www.URL.URL/URL"})
                 print(f"[ERROR] {e.code} / {e.message}")
                 print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
                 traceback.print_exc()
+                print("[ERROR MESSAGE]")
+                print(e.error_message)
         except Exception:
             print(_("internal_error_title", not args.uncolored))
-            print(_("internal_error_report", not args.uncolored))
+            print(_("internal_error_report", not args.uncolored) % {"url": "htpps://www.URL.URL/URL"})
             print("[ERROR] NO EXCEPT - NOT AppleTreeError")
             print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
             traceback.print_exc()
