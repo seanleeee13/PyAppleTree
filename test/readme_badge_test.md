@@ -1,5 +1,1 @@
-![Python Version](https://shields.io)
-![GitHub License](https://shields.io)
-![GitHub release (latest by date)](https://shields.io)
-![GitHub Workflow Status](https://shields.io)
-![GitHub Downloads](https://shields.io)
+![Python Version](https://img.shields.io/badge/python_version-3.15-blue)
