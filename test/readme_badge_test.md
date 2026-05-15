@@ -1,1 +1,1 @@
-![Python Version](https://img.shields.io/badge/python_version-3.15-blue)
+![Python Version](https://img.shields.io/badge/python-3.15+-blue)

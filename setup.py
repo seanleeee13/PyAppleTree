@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="PyAppleTree",
-    version="1.0.0",
+    version="1.0.0a0r1.0",
     packages=["appletree"],
     python_requires=">=3.15",
     install_requires=[],
