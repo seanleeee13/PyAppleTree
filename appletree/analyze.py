@@ -4,7 +4,7 @@ lazy from profiling.sampling.cli import _handle_run, COLLECTOR_MAP
 lazy from contextlib import redirect_stdout, redirect_stderr
 lazy from collections import Counter
 lazy from unittest.mock import patch
-lazy from .locales import _
+lazy from .locales import _, _e
 lazy import subprocess
 lazy import traceback
 lazy import time
@@ -73,9 +73,13 @@ class AppleTreeBinaryCollector(BinaryCollector):
                     if not thread.frame_info:
                         continue
                     top = thread.frame_info[0]
+                    if top.filename == "~" or top.location is None:
+                        continue
                     current_loc = [top.filename, top.location[0], top.funcname]
                     full_stack = []
                     for frame in thread.frame_info:
+                        if frame.filename == "~" or frame.location is None:
+                            continue
                         full_stack.append([
                             frame.filename,
                             frame.location[0],
@@ -83,7 +87,7 @@ class AppleTreeBinaryCollector(BinaryCollector):
                         ])
                     self._appletree_samples.append([*current_loc, full_stack])
         except:
-            pass
+            sys.__stdout__.write(traceback.format_exc() + str(stack_frames))
         return super().collect(stack_frames, timestamp_us)
 
 used_prbc = None
@@ -136,9 +140,10 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
     target_file = target_file.replace("/", "\\")
     Popen = subprocess.Popen
     with patch("subprocess.Popen") as mocked_popen, safe_open(input_file, "r") as in_f:
+        r, w = os.pipe()
         def popen_side_effect(cmd, **kw):
             kw["stdout"] = subprocess.DEVNULL
-            kw["stderr"] = subprocess.PIPE
+            kw["stderr"] = w
             kw["stdin"] = in_f if in_f else subprocess.DEVNULL
             return Popen(cmd, **kw)
         mocked_popen.side_effect = popen_side_effect
@@ -147,6 +152,15 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
             f = io.StringIO()
             with redirect_stdout(f), redirect_stderr(f):
                 _handle_run(SampleArgs(target_file, output_file))
+            os.close(w)
+            error_bytes = os.read(r, 1024 * 1024)
+            os.close(r)
+            error_msg = error_bytes.decode("utf-8", errors="ignore")
+            if error_msg.strip():
+                raise AppleTreeError(
+                    "analyze/run#sample.5", message=_("analyze_error") % {"error_message": _e(error_msg, color=True)},
+                    err_message=_e(error_msg, color=True), um=True
+                )
             if "Interrupted by user." in f.getvalue():
                 raise KeyboardInterrupt
         except KeyboardInterrupt:
@@ -164,6 +178,14 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
             ) from e
         finally:
             COLLECTOR_MAP["binary"] = BinaryCollector
+            try:
+                os.close(w)
+            except:
+                pass
+            try:
+                os.close(r)
+            except:
+                pass
     return output_file
 
 def sample_tempfile(target_file, input_file=None, log=True, color=True):
@@ -189,8 +211,10 @@ def analyze_new(filename, input_file, detailed=False, log=True, color=True):
             print("\n")
         return used_prbc._appletree_samples
     except AppleTreeError:
+        print("\n")
         raise
     except Exception as e:
+        print("\n")
         raise AppleTreeError("analyze/run#analyze_new.1", message="Error while sampling", err_message=traceback.format_exc(), um=False) from e
     finally:
         clean_prbc()
@@ -365,19 +389,20 @@ def get_m_func_report(metrics, color=True):
         ) from e
 
 def get_line_report(metrics, report, color=True):
-    top_5 = [[0, ()]] * 5
+    data = []
     for key in metrics["lines"].keys():
-        top_5.append([metrics["lines"][key]["sample%"], key])
-        top_5.sort(key=lambda k: k[0])
-        top_5 = top_5[1:]
-    ctop = []
-    for i in top_5:
-        if i != [0, []]:
-            ctop.append(i)
-    ctop.reverse()
-    if not ctop:
-        return
-    for i, p in enumerate(ctop):
+        data.append([metrics["lines"][key]["sample%"], key])
+    data.sort(key=lambda k: k[0], reverse=True)
+    if len(data) == 0:
+        raise AppleTreeError(
+            "analyze/run#get_line_report.1", message=_("analyze_run_no_data"),
+            err_message="Exception", um=True
+        )
+    elif len(data) < 5:
+        top_5 = data
+    else:
+        top_5 = data[:5]
+    for i, p in enumerate(top_5):
         match metrics["functions"][p[1][::2]]["type"]:
             case (1, 1) | (3, 1) | (3, 2):
                 report[1][i + 1] = [p[1], _("analyze_lreport_overload", color)]
@@ -411,6 +436,8 @@ def get_report(report_data, color=True):
                 report += "  " + i + "\n"
             report += "\n"
         report += "".join(_("analyze_report_warning", color))
+    except AppleTreeError:
+        raise
     except KeyboardInterrupt:
         raise
     except Exception as e:

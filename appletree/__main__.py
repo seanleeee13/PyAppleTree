@@ -63,7 +63,7 @@ def main(name="appletree"):
                 print(e.message)
             else:
                 print(_("internal_error_title", not args.uncolored))
-                print(_("internal_error_report", not args.uncolored) % {"url": "htpps://www.URL.URL/URL"})
+                print(_("internal_error_report", not args.uncolored) % {"url": "https://github.com/seanleeee13/PyAppleTree/issues/new"})
                 print(f"[ERROR] {e.code} / {e.message}")
                 print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
                 traceback.print_exc()
@@ -71,7 +71,7 @@ def main(name="appletree"):
                 print(e.error_message)
         except Exception:
             print(_("internal_error_title", not args.uncolored))
-            print(_("internal_error_report", not args.uncolored) % {"url": "htpps://www.URL.URL/URL"})
+            print(_("internal_error_report", not args.uncolored) % {"url": "https://github.com/seanleeee13/PyAppleTree/issues/new"})
             print("[ERROR] NO EXCEPT - NOT AppleTreeError")
             print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
             traceback.print_exc()

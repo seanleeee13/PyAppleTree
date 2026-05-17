@@ -1,1 +1,1 @@
-python -m appletree analyze -i test/a.txt test/a.py
+python3.15 -m appletree analyze -i test/a.txt test/a.py

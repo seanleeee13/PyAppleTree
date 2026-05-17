@@ -57,5 +57,7 @@ translate_data = {
     ],
     "analyze_mfreport_ntitle": "<blue>#%(cnt)d %(time)s<cyan>%(slash)s<end>%(msg_part)s",
     "analyze_run_no_target": "타겟 파일 %(target_file)s가 존재하지 않습니다.",
-    "analyze_run_no_input": "입력 파일 %(input_file)s가 존재하지 않습니다."
+    "analyze_run_no_input": "입력 파일 %(input_file)s가 존재하지 않습니다.",
+    "analyze_run_no_data": "각각의 실행이 너무 빨리 끝나 데이터가 모이지 않았습니다. 더 큰 입력값으로 시도해 보아도 좋을 것 같습니다.",
+    "analyze_error": "분석 도중 타겟 코드에서 에러가 일어났습니다:\n%(error_message)s"
 }

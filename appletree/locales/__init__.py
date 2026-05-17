@@ -2,6 +2,7 @@ lazy from ..config import get_config
 lazy from ..utils import Color
 lazy from pathlib import Path
 lazy import importlib
+lazy import gettext
 lazy import locale
 lazy import re
 
@@ -75,7 +76,7 @@ def get_translation(lang, word, color=True):
     else:
         return
     if tr == None:
-        return "word"
+        return None
     flag = False
     if not isinstance(tr, list) and not isinstance(tr, tuple):
         tr = [tr]
@@ -90,9 +91,12 @@ def get_translation(lang, word, color=True):
 
 def translate(word, color=True):
     a = get_translation(get_config()["lang"], word, color)
-    if a == "word":
-        print(word)
-        return word
+    if a is None:
+        a = gettext.gettext(word)
     return a
 
+def translate_error(error, color=True):
+    return error
+
 _ = translate
+_e = translate_error
