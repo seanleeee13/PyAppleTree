@@ -10,10 +10,10 @@ lazy import os
 
 def is_file(path):
     if not os.path.isfile(path):
-        raise argparse.ArgumentTypeError(_("argp_invalid_file_path") % path)
+        raise argparse.ArgumentTypeError(_("argp_invalid_file_path") % {"path": path})
     return path
 
-def main():
+def main(name="appletree"):
     commands = ["run", "debug", "analyze"]
     if len(sys.argv) > 1 and not any(cmd in sys.argv for cmd in commands):
         for arg in sys.argv[1:]:
@@ -26,7 +26,7 @@ def main():
         return
     with patch("argparse._") as mocked_gettext:
         mocked_gettext.side_effect = _
-        parser = argparse.ArgumentParser(prog="PyAppleTree", description=_("argp_appletree_desc"))
+        parser = argparse.ArgumentParser(prog=name, description=_("argp_appletree_desc"))
         subparsers = parser.add_subparsers(dest="command", help=_("argp_select_mode"))
         run_parser = subparsers.add_parser("run", help=_("argp_run"))
         run_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
@@ -63,13 +63,15 @@ def main():
                 print(e.message)
             else:
                 print(_("internal_error_title", not args.uncolored))
-                print(_("internal_error_report", not args.uncolored))
+                print(_("internal_error_report", not args.uncolored) % {"url": "htpps://www.URL.URL/URL"})
                 print(f"[ERROR] {e.code} / {e.message}")
                 print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
                 traceback.print_exc()
+                print("[ERROR MESSAGE]")
+                print(e.error_message)
         except Exception:
             print(_("internal_error_title", not args.uncolored))
-            print(_("internal_error_report", not args.uncolored))
+            print(_("internal_error_report", not args.uncolored) % {"url": "htpps://www.URL.URL/URL"})
             print("[ERROR] NO EXCEPT - NOT AppleTreeError")
             print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
             traceback.print_exc()
@@ -81,4 +83,4 @@ def json(args):
     # parser 코드들
 
 if __name__ == "__main__":
-    main()
+    main(name="python -m appletree")
