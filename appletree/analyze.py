@@ -170,8 +170,6 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
         except AppleTreeError:
             raise
         except Exception as e:
-            if log:
-                print()
             raise AppleTreeError(
                 "analyze/run#sample.1", message="Error while sample _handle_run",
                 err_message=traceback.format_exc(), um=False
@@ -197,24 +195,29 @@ def analyze_new(filename, input_file, detailed=False, log=True, color=True):
         AppleTreeBinaryCollector._appletree_start_t = start
         AppleTreeBinaryCollector._appletree_target = filename
         AppleTreeBinaryCollector._appletree_detailed = detailed
+        error_count = 0
         while time.perf_counter() - start <= (5 if not detailed else 10):
             ret = None
             try:
                 ret = sample_tempfile(filename, input_file, log, color)
             finally:
                 clean(ret)
+            if len(used_prbc._appletree_samples) == 0:
+                error_count += 1
+                if error_count >= 50:
+                    break
         if log:
-            print("\n")
+            print("\r" + " " * 175 + "\r", end="")
         return used_prbc._appletree_samples
     except KeyboardInterrupt:
         if log:
-            print("\n")
+            print("\r" + " " * 175 + "\r", end="")
         return used_prbc._appletree_samples
     except AppleTreeError:
-        print("\n")
+        print("\r" + " " * 175 + "\r", end="")
         raise
     except Exception as e:
-        print("\n")
+        print("\r" + " " * 175 + "\r", end="")
         raise AppleTreeError("analyze/run#analyze_new.1", message="Error while sampling", err_message=traceback.format_exc(), um=False) from e
     finally:
         clean_prbc()
@@ -226,13 +229,10 @@ def filter_samples(samples, target_file=None, detailed=False):
             err_message="TypeError", um=False
         )
     target_abs_path = os.path.abspath(target_file) if target_file else None
-    clean_samples = []
+    clean_samples = set()
     for loc in samples:
         if detailed or loc[0] == target_abs_path:
-            clean_samples.append(tuple(loc[:3]))
-        for subloc in loc[3]:
-            if not detailed and subloc[0] == target_abs_path:
-                clean_samples.append(tuple(subloc))
+            clean_samples.add(tuple(loc[:3]))
     return clean_samples
 
 def count_filter_samples(samples, target_file=None, detailed=False):
@@ -253,25 +253,25 @@ def count_filter_samples(samples, target_file=None, detailed=False):
             stack_count[tuple(loc[:3])] += 1
             stack_count_func[tuple(loc)[::2]] += 1
         for subloc in set(map(tuple, loc[3])) - set([tuple(loc[:3])]):
-            if not detailed and subloc[0] == target_abs_path:
+            if detailed or subloc[0] == target_abs_path:
                 stack_count[tuple(subloc[:3])] += 1
                 stack_count_func[tuple(subloc)[::2]] += 1
     return frozendict({"normal cnt": normal_count, "stack cnt": stack_count, "normal fcnt": normal_count_func, "stack fcnt": stack_count_func})
 
 def get_sample_percent(sample_counter, loc):
-    return 100 * sample_counter["normal cnt"].get(loc, 0) / sum(sample_counter["normal cnt"].values()) if sum(sample_counter["normal cnt"].values()) else 2147483647 if sample_counter["normal cnt"].get(loc, 0) else 0
+    return 100 * sample_counter["normal cnt"].get(loc, 0) / sum(sample_counter["normal cnt"].values()) if sum(sample_counter["normal cnt"].values()) else 2147483647.0 if sample_counter["normal cnt"].get(loc, 0) else 0.0
 
 def get_cumulative_percent(sample_counter, loc):
-    return 100 * sample_counter["stack cnt"].get(loc, 0) / sum(sample_counter["normal cnt"].values()) if sum(sample_counter["normal cnt"].values()) else 2147483647 if sample_counter["stack cnt"].get(loc, 0) else 0
+    return 100 * sample_counter["stack cnt"].get(loc, 0) / sum(sample_counter["normal cnt"].values()) if sum(sample_counter["normal cnt"].values()) else 2147483647.0 if sample_counter["stack cnt"].get(loc, 0) else 0.0
 
 def get_fsample_percent(sample_counter, floc):
-    return 100 * sample_counter["normal fcnt"].get(floc, 0) / sum(sample_counter["normal fcnt"].values()) if sum(sample_counter["normal fcnt"].values()) else 2147483647 if sample_counter["normal fcnt"].get(floc, 0) else 0
+    return 100 * sample_counter["normal fcnt"].get(floc, 0) / sum(sample_counter["normal fcnt"].values()) if sum(sample_counter["normal fcnt"].values()) else 2147483647.0 if sample_counter["normal fcnt"].get(floc, 0) else 0.0
 
 def get_fcumulative_percent(sample_counter, floc):
-    return 100 * sample_counter["stack fcnt"].get(floc, 0) / sum(sample_counter["normal fcnt"].values()) if sum(sample_counter["normal fcnt"].values()) else 2147483647 if sample_counter["stack fcnt"].get(floc, 0) else 0
+    return 100 * sample_counter["stack fcnt"].get(floc, 0) / sum(sample_counter["normal fcnt"].values()) if sum(sample_counter["normal fcnt"].values()) else 2147483647.0 if sample_counter["stack fcnt"].get(floc, 0) else 0.0
 
 def get_magnification(sample_counter, floc):
-    return sample_counter["stack fcnt"].get(floc, 0) / sample_counter["normal fcnt"].get(floc, 0) if sample_counter["normal fcnt"].get(floc) else 2147483647 if sample_counter["stack fcnt"].get(floc, 0) else 0
+    return sample_counter["stack fcnt"].get(floc, 0) / sample_counter["normal fcnt"].get(floc, 0) if sample_counter["normal fcnt"].get(floc) else 2147483647.0 if sample_counter["stack fcnt"].get(floc, 0) else 0.0
 
 def get_ftype(fdata):
     if fdata["sample%"] >= 75 and fdata["magnification"] <= 1.1:
@@ -302,8 +302,7 @@ def get_ftype(fdata):
 def get_metrics(samples, target_file=None, detailed=False):
     try:
         sample_counter = count_filter_samples(samples, target_file, detailed)
-        filtered = filter_samples(samples, target_file, detailed)
-        locs = set(filtered)
+        locs = filter_samples(samples, target_file, detailed)
         metrics = {"lines": {}, "functions": {}}
         code_data = {"sample_cnt": sum(sample_counter["normal cnt"].values())}
         for loc in locs:
@@ -336,22 +335,13 @@ def get_func_report(metrics, code_data, color=True):
     report = [{}, {}, []]
     if code_data["sample_cnt"] < 1000:
         report[2].append(_("analyze_data_count", color))
-    for key in metrics["functions"].keys():
-        match metrics["functions"][key]["type"]:
-            case (1, 1):
-                report[0][key] = _("analyze_freport_1_1", color)
-            case (2, 1):
-                report[0][key] = _("analyze_freport_2_1", color)
-            case (2, 2):
-                report[0][key] = _("analyze_freport_2_2", color)
-            case (2, 3):
-                report[0][key] = _("analyze_freport_2_3", color)
-            case (3, 1):
-                report[0][key] = _("analyze_freport_3_1", color)
-            case (3, 2):
-                report[0][key] = _("analyze_freport_3_2", color)
-            case (4, 1):
-                report[0][key] = _("analyze_freport_4_1", color)
+    keys = list(metrics["functions"].keys())
+    keys.sort(key=lambda k: metrics["functions"][k]["sample%"], reverse=True)
+    for idx, key in enumerate(keys):
+        data = metrics["functions"][key]["type"]
+        report[0][key] = [_(f"analyze_freport_{data[0]}_{data[1]}", color), idx + 1, metrics["functions"][key]["sample%"], data[0]]
+        report[0][key].append(metrics["functions"][key]["cumulative%"])
+        report[0][key].append(metrics["functions"][key]["magnification"])
     return report
 
 def get_m_func_report(metrics, color=True):
@@ -363,22 +353,9 @@ def get_m_func_report(metrics, color=True):
                 top = [metrics["functions"][key]["sample%"], key]
         if top == [0, ()]:
             return
+        data = metrics["functions"][key]["type"]
         report[1] = _("analyze_mfreport_func", color) % {"func": key[1], "br": key[1]}
-        match metrics["functions"][key]["type"]:
-            case (1, 1):
-                report[2] = _("analyze_mfreport_1_1", color)
-            case (2, 1):
-                report[2] = _("analyze_mfreport_2_1", color)
-            case (2, 2):
-                report[2] = _("analyze_mfreport_2_2", color)
-            case (2, 3):
-                report[2] = _("analyze_mfreport_2_3", color)
-            case (3, 1):
-                report[2] = _("analyze_mfreport_3_1", color)
-            case (3, 2):
-                report[2] = _("analyze_mfreport_3_2", color)
-            case (4, 1):
-                report[2] = _("analyze_mfreport_4_1", color)
+        report[2] = _(f"analyze_mfreport_{data[0]}_{data[1]}", color) % {"rate": float(metrics["functions"][key]["sample%"])}
         return report
     except KeyboardInterrupt:
         raise
@@ -405,36 +382,48 @@ def get_line_report(metrics, report, color=True):
     for i, p in enumerate(top_5):
         match metrics["functions"][p[1][::2]]["type"]:
             case (1, 1) | (3, 1) | (3, 2):
-                report[1][i + 1] = [p[1], _("analyze_lreport_overload", color)]
+                report[1][i + 1] = [p[1], _("analyze_lreport_overload", color), metrics["functions"][p[1][::2]]["sample%"], 1]
             case (2, 1) | (2, 2):
-                report[1][i + 1] = [p[1], _("analyze_lreport_large", color)]
+                report[1][i + 1] = [p[1], _("analyze_lreport_large", color), metrics["functions"][p[1][::2]]["sample%"], 2]
             case (2, 3):
-                report[1][i + 1] = [p[1], _("analyze_lreport_recursion", color)]
+                report[1][i + 1] = [p[1], _("analyze_lreport_recursion", color), metrics["functions"][p[1][::2]]["sample%"], 3]
             case (4, 1):
-                report[1][i + 1] = [p[1], _("analyze_lreport_normal", color)]
+                report[1][i + 1] = [p[1], _("analyze_lreport_normal", color), metrics["functions"][p[1][::2]]["sample%"], 4]
+        report[1][i + 1].append(metrics["functions"][p[1][::2]]["cumulative%"])
     return report
 
-def get_report(report_data, color=True):
+def get_report(report_data, code_data, color=True, detailed=False):
     try:
         report = _("analyze_report_title", color)
+        if detailed:
+            report += _("analyze_data_count_show", color) % {"cnt": code_data["sample_cnt"]} + "\n\n"
         report_overall = "\n\n".join(map(lambda k: "\n".join(k), report_data[2]))
         report += report_overall
         if report_overall.strip():
             report += "\n\n"
         report += _("analyze_freport_title", color)
         for key in report_data[0].keys():
-            report += _("analyze_freport_func", color) % {"func": key[1], "br": key[1]} + "\n"
-            for i in report_data[0][key]:
+            report += _("analyze_freport_func", color) % {"rank": report_data[0][key][1], "func": key[1], "br": key[1]} + "\n"
+            for i in report_data[0][key][0]:
                 report += "  " + i + "\n"
-            report += "\n"
+            report += "  " + _(f"analyze_sample_rate_{report_data[0][key][3]}", color) % {"sample_rate": report_data[0][key][2]}
+            if detailed:
+                report += _(f"analyze_cumulative_rate_{report_data[0][key][3]}", color) % {"cumulative_rate": report_data[0][key][4]}
+                report += _(f"analyze_magnification_{report_data[0][key][3]}", color) % {"magnification": report_data[0][key][5]}
+            report += "\n\n"
         report += _("analyze_lreport_title", color)
         for key in report_data[1].keys():
             report += _("analyze_lreport_line_rank", color) % {"rank": key} + str(report_data[1][key][0][:2][0]) + ", "
             report += _("analyze_lreport_line", color) % {"line": report_data[1][key][0][:2][1]}
-            report += _("analyze_lreport_line_func", color) % {"func": report_data[1][key][0][2], "br": report_data[1][key][0][2]}
-            for i in report_data[1][key][1:]:
+            report += _("analyze_lreport_line_func", color) % \
+                {"func": report_data[1][key][0][2], "br": report_data[1][key][0][2]}
+            for i in report_data[1][key][1:-3]:
                 report += "  " + i + "\n"
-            report += "\n"
+            report += "  " + _(f"analyze_sample_rate_{report_data[1][key][-2]}", color) % \
+                {"sample_rate": report_data[1][key][-3]}
+            if detailed:
+                report += _(f"analyze_cumulative_rate_{report_data[1][key][-2]}", color) % {"cumulative_rate": report_data[1][key][-1]}
+            report += "\n\n"
         report += "".join(_("analyze_report_warning", color))
     except AppleTreeError:
         raise
@@ -450,15 +439,15 @@ def get_report(report_data, color=True):
 _run = analyze_new
 _metrics = get_metrics
 
-def _report(metrics, code_data, color=True):
+def _report(metrics, code_data, color=True, detailed=False):
     func_report = get_func_report(metrics, code_data, color)
     line_report = get_line_report(metrics, func_report, color)
-    return get_report(line_report, color)
+    return get_report(line_report, code_data, color, detailed)
 
 def _analyze(filename, input_file=None, detailed=False, log=True, color=True):
     try:
         metrics_data = _metrics(_run(filename, input_file, detailed, log, color), filename, detailed)
-        report_data = _report(*metrics_data, color)
+        report_data = _report(*metrics_data, color, detailed)
         return report_data
     except AppleTreeError:
         raise
