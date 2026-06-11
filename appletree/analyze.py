@@ -224,47 +224,28 @@ def analyze_new(filename, input_file, inc_ext=False, log=True, color=True, min_t
 
 def filter_samples(samples, inc_ext=False):
     cwd = os.getcwd()
-    clean_samples = set()
-    for loc in samples:
-        if inc_ext or loc[0].startswith(cwd):
-            clean_samples.add(tuple(loc[:3]))
-        for subloc in set(map(tuple, loc[3])):
-            if inc_ext or subloc[0].startswith(cwd):
-                clean_samples.add(tuple(subloc[:3]))
-    return clean_samples
-
-def count_filter_samples(samples, inc_ext=False):
-    cwd = os.getcwd()
     normal_count = Counter()
     stack_count = Counter()
     normal_count_func = Counter()
     stack_count_func = Counter()
     for loc in samples:
         if inc_ext or loc[0].startswith(cwd):
-            normal_count[tuple(loc[:3])] += 1
-            normal_count_func[tuple(loc)[::2]] += 1
-            stack_count[tuple(loc[:3])] += 1
-            stack_count_func[tuple(loc)[::2]] += 1
+            lloc = tuple(loc[:3])
+            floc = tuple(loc[::2])
+            normal_count[lloc] += 1
+            normal_count_func[floc] += 1
+            stack_count[lloc] += 1
+            stack_count_func[floc] += 1
         for subloc in set(map(tuple, loc[3])) - set([tuple(loc[:3])]):
             if inc_ext or subloc[0].startswith(cwd):
-                stack_count[tuple(subloc[:3])] += 1
-                stack_count_func[tuple(subloc)[::2]] += 1
-    return frozendict({"normal cnt": normal_count, "stack cnt": stack_count, "normal fcnt": normal_count_func, "stack fcnt": stack_count_func})
-
-def get_sample_percent(sample_counter, loc):
-    return 100 * sample_counter["normal cnt"].get(loc, 0) / sum(sample_counter["normal cnt"].values()) if sum(sample_counter["normal cnt"].values()) else 2147483647.0 if sample_counter["normal cnt"].get(loc, 0) else 0.0
-
-def get_cumulative_percent(sample_counter, loc):
-    return 100 * sample_counter["stack cnt"].get(loc, 0) / sum(sample_counter["normal cnt"].values()) if sum(sample_counter["normal cnt"].values()) else 2147483647.0 if sample_counter["stack cnt"].get(loc, 0) else 0.0
-
-def get_fsample_percent(sample_counter, floc):
-    return 100 * sample_counter["normal fcnt"].get(floc, 0) / sum(sample_counter["normal fcnt"].values()) if sum(sample_counter["normal fcnt"].values()) else 2147483647.0 if sample_counter["normal fcnt"].get(floc, 0) else 0.0
-
-def get_fcumulative_percent(sample_counter, floc):
-    return 100 * sample_counter["stack fcnt"].get(floc, 0) / sum(sample_counter["normal fcnt"].values()) if sum(sample_counter["normal fcnt"].values()) else 2147483647.0 if sample_counter["stack fcnt"].get(floc, 0) else 0.0
-
-def get_magnification(sample_counter, floc):
-    return sample_counter["stack fcnt"].get(floc, 0) / sample_counter["normal fcnt"].get(floc, 0) if sample_counter["normal fcnt"].get(floc) else 2147483647.0 if sample_counter["stack fcnt"].get(floc, 0) else 0.0
+                lsloc = tuple(subloc[:3])
+                fsloc = tuple(subloc[::2])
+                stack_count[lsloc] += 1
+                stack_count_func[fsloc] += 1
+    return frozendict({
+            "normal cnt": normal_count, "stack cnt": stack_count,
+            "normal fcnt": normal_count_func, "stack fcnt": stack_count_func
+        })
 
 def get_ftype(fdata):
     if fdata["sample%"] >= 75 and fdata["magnification"] <= 1.1:
@@ -294,25 +275,31 @@ def get_ftype(fdata):
 
 def get_metrics(samples, inc_ext=False):
     try:
-        sample_counter = count_filter_samples(samples, inc_ext)
-        locs = filter_samples(samples, inc_ext)
+        sample_counter = filter_samples(samples, inc_ext)
         metrics = {"lines": {}, "functions": {}}
         code_data = {"sample_cnt": sum(sample_counter["normal cnt"].values())}
-        for loc in locs:
+        sum_ncnt = sum(sample_counter["normal cnt"].values())
+        sum_fncnt = sum(sample_counter["normal fcnt"].values())
+        for loc in sample_counter["stack cnt"].keys():
+            loc2 = loc[::2]
+            ncnt = sample_counter["normal cnt"].get(loc, 0)
+            scnt = sample_counter["stack cnt"].get(loc, 0)
+            fncnt = sample_counter["normal fcnt"].get(loc2, 0)
+            fscnt = sample_counter["stack fcnt"].get(loc2, 0)
             metrics["lines"][loc] = {
-                "samples": sample_counter["normal cnt"].get(loc, 0),
-                "cumulatives": sample_counter["stack cnt"].get(loc, 0),
-                "sample%": get_sample_percent(sample_counter, loc),
-                "cumulative%": get_cumulative_percent(sample_counter, loc)
+                "samples": ncnt,
+                "cumulatives": scnt,
+                "sample%": 100 * ncnt / sum_ncnt if sum_ncnt else 2147483647.0 if ncnt else 0.0,
+                "cumulative%": 100 * scnt / sum_ncnt if sum_ncnt else 2147483647.0 if scnt else 0.0
             }
-            metrics["functions"][loc[::2]] = {
-                "samples": sample_counter["normal fcnt"].get(loc[::2], 0),
-                "cumulatives": sample_counter["stack fcnt"].get(loc[::2], 0),
-                "sample%": get_fsample_percent(sample_counter, loc[::2]),
-                "cumulative%": get_fcumulative_percent(sample_counter, loc[::2]),
-                "magnification": get_magnification(sample_counter, loc[::2])
+            metrics["functions"][loc2] = {
+                "samples": fncnt,
+                "cumulatives": fscnt,
+                "sample%": 100 * fncnt / sum_fncnt if sum_fncnt else 2147483647.0 if fncnt else 0.0,
+                "cumulative%": 100 * fscnt / sum_fncnt if sum_fncnt else 2147483647.0 if fscnt else 0.0,
+                "magnification": fscnt / fncnt if fncnt else 2147483647.0 if fscnt else 0.0
             }
-            metrics["functions"][loc[::2]]["type"] = get_ftype(metrics["functions"][loc[::2]])
+            metrics["functions"][loc2]["type"] = get_ftype(metrics["functions"][loc2])
     except KeyboardInterrupt:
         raise
     except AppleTreeError:

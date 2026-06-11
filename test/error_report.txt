@@ -1,7 +1,7 @@
 === 필요 ===
 - 실시간 메세지가 잘리면 도배됨 [ERROR]
 - 분산 병목 상대평가 메세지 도입 [WARNING]
-- 가끔씩 _shutdown같은 놈들이 적발됨 [WARNING]
+- 가끔씩 _shutdown같은 놈들이 적발됨 (pythoncore 배제) [WARNING]
 - 가독성 좀 [WARNING]
 - analyze에 기본 tachyon 기능 추가 [FEATURE]
 - analyze에 리포트를 파일로 저장 추가 [FEATURE]
