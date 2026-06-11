@@ -42,7 +42,7 @@ class AppleTreeBinaryCollector(BinaryCollector):
     _appletree_samples = []
     _appletree_log = True
     _appletree_target = ""
-    _appletree_detailed = False
+    _appletree_inc_ext = False
     _appletree_color = True
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -51,8 +51,8 @@ class AppleTreeBinaryCollector(BinaryCollector):
             self._appletree_cnt += 1
             if self._appletree_cnt % 50 == 0:
                 lst = get_m_func_report(get_metrics(
-                    self._appletree_samples, self._appletree_target, 
-                    self._appletree_detailed)[0], self._appletree_color
+                    self._appletree_samples, self._appletree_target,
+                    self._appletree_inc_ext)[0], self._appletree_color
                 )
                 if lst:
                     self._appletree_msg = " ".join(lst)
@@ -108,7 +108,7 @@ def get_prbc(log=True, color=True):
                 _used_prbc._appletree_msg_len = used_prbc._appletree_msg_len
                 _used_prbc._appletree_samples = used_prbc._appletree_samples
                 _used_prbc._appletree_target = used_prbc._appletree_target
-                _used_prbc._appletree_detailed = used_prbc._appletree_detailed
+                _used_prbc._appletree_inc_ext = used_prbc._appletree_inc_ext
             used_prbc = _used_prbc
             prbc_args = args
             prbc_kwargs = kwargs
@@ -189,14 +189,14 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
 def sample_tempfile(target_file, input_file=None, log=True, color=True):
     return tempfile_wrapper(sample, target_file, input_file, log, color, index=2)
 
-def analyze_new(filename, input_file, detailed=False, log=True, color=True):
+def analyze_new(filename, input_file, inc_ext=False, log=True, color=True, min_time=5):
     try:
         start = time.perf_counter()
         AppleTreeBinaryCollector._appletree_start_t = start
         AppleTreeBinaryCollector._appletree_target = filename
-        AppleTreeBinaryCollector._appletree_detailed = detailed
+        AppleTreeBinaryCollector._appletree_inc_ext = inc_ext
         error_count = 0
-        while time.perf_counter() - start <= (5 if not detailed else 10):
+        while time.perf_counter() - start <= min_time:
             ret = None
             try:
                 ret = sample_tempfile(filename, input_file, log, color)
@@ -222,38 +222,31 @@ def analyze_new(filename, input_file, detailed=False, log=True, color=True):
     finally:
         clean_prbc()
 
-def filter_samples(samples, target_file=None, detailed=False):
-    if not target_file and not detailed:
-        raise AppleTreeError(
-            "analyze/metrics#filter_samples.1", message="Missing target file while not detailed",
-            err_message="TypeError", um=False
-        )
-    target_abs_path = os.path.abspath(target_file) if target_file else None
+def filter_samples(samples, inc_ext=False):
+    cwd = os.getcwd()
     clean_samples = set()
     for loc in samples:
-        if detailed or loc[0] == target_abs_path:
+        if inc_ext or loc[0].startswith(cwd):
             clean_samples.add(tuple(loc[:3]))
+        for subloc in set(map(tuple, loc[3])):
+            if inc_ext or subloc[0].startswith(cwd):
+                clean_samples.add(tuple(subloc[:3]))
     return clean_samples
 
-def count_filter_samples(samples, target_file=None, detailed=False):
-    if not target_file and not detailed:
-        raise AppleTreeError(
-            "analyze/metrics#count_filter_samples.1", message="Missing target file while not detailed",
-            err_message="TypeError", um=False
-        )
-    target_abs_path = os.path.abspath(target_file) if target_file else None
+def count_filter_samples(samples, inc_ext=False):
+    cwd = os.getcwd()
     normal_count = Counter()
     stack_count = Counter()
     normal_count_func = Counter()
     stack_count_func = Counter()
     for loc in samples:
-        if detailed or loc[0] == target_abs_path:
+        if inc_ext or loc[0].startswith(cwd):
             normal_count[tuple(loc[:3])] += 1
             normal_count_func[tuple(loc)[::2]] += 1
             stack_count[tuple(loc[:3])] += 1
             stack_count_func[tuple(loc)[::2]] += 1
         for subloc in set(map(tuple, loc[3])) - set([tuple(loc[:3])]):
-            if detailed or subloc[0] == target_abs_path:
+            if inc_ext or subloc[0].startswith(cwd):
                 stack_count[tuple(subloc[:3])] += 1
                 stack_count_func[tuple(subloc)[::2]] += 1
     return frozendict({"normal cnt": normal_count, "stack cnt": stack_count, "normal fcnt": normal_count_func, "stack fcnt": stack_count_func})
@@ -299,10 +292,10 @@ def get_ftype(fdata):
     else:
         return (4, 1)
 
-def get_metrics(samples, target_file=None, detailed=False):
+def get_metrics(samples, inc_ext=False):
     try:
-        sample_counter = count_filter_samples(samples, target_file, detailed)
-        locs = filter_samples(samples, target_file, detailed)
+        sample_counter = count_filter_samples(samples, inc_ext)
+        locs = filter_samples(samples, inc_ext)
         metrics = {"lines": {}, "functions": {}}
         code_data = {"sample_cnt": sum(sample_counter["normal cnt"].values())}
         for loc in locs:
@@ -392,10 +385,10 @@ def get_line_report(metrics, report, color=True):
         report[1][i + 1].append(metrics["functions"][p[1][::2]]["cumulative%"])
     return report
 
-def get_report(report_data, code_data, color=True, detailed=False):
+def get_report(report_data, code_data, color=True, show_metrics=False):
     try:
         report = _("analyze_report_title", color)
-        if detailed:
+        if show_metrics:
             report += _("analyze_data_count_show", color) % {"cnt": code_data["sample_cnt"]} + "\n\n"
         report_overall = "\n\n".join(map(lambda k: "\n".join(k), report_data[2]))
         report += report_overall
@@ -407,7 +400,7 @@ def get_report(report_data, code_data, color=True, detailed=False):
             for i in report_data[0][key][0]:
                 report += "  " + i + "\n"
             report += "  " + _(f"analyze_sample_rate_{report_data[0][key][3]}", color) % {"sample_rate": report_data[0][key][2]}
-            if detailed:
+            if show_metrics:
                 report += _(f"analyze_cumulative_rate_{report_data[0][key][3]}", color) % {"cumulative_rate": report_data[0][key][4]}
                 report += _(f"analyze_magnification_{report_data[0][key][3]}", color) % {"magnification": report_data[0][key][5]}
             report += "\n\n"
@@ -421,7 +414,7 @@ def get_report(report_data, code_data, color=True, detailed=False):
                 report += "  " + i + "\n"
             report += "  " + _(f"analyze_sample_rate_{report_data[1][key][-2]}", color) % \
                 {"sample_rate": report_data[1][key][-3]}
-            if detailed:
+            if show_metrics:
                 report += _(f"analyze_cumulative_rate_{report_data[1][key][-2]}", color) % {"cumulative_rate": report_data[1][key][-1]}
             report += "\n\n"
         report += "".join(_("analyze_report_warning", color))
@@ -439,15 +432,19 @@ def get_report(report_data, code_data, color=True, detailed=False):
 _run = analyze_new
 _metrics = get_metrics
 
-def _report(metrics, code_data, color=True, detailed=False):
+def _report(metrics, code_data, color=True, show_metrics=False):
     func_report = get_func_report(metrics, code_data, color)
     line_report = get_line_report(metrics, func_report, color)
-    return get_report(line_report, code_data, color, detailed)
+    return get_report(line_report, code_data, color, show_metrics)
 
-def _analyze(filename, input_file=None, detailed=False, log=True, color=True):
+def _analyze(filename, arguments):
+    # input_file=None, advanced=False, lab=False, log=True, color=True
     try:
-        metrics_data = _metrics(_run(filename, input_file, detailed, log, color), filename, detailed)
-        report_data = _report(*metrics_data, color, detailed)
+        metrics_data = _metrics(
+            _run(filename, arguments["input"], arguments["inc_ext"], arguments["log"], arguments["color"], arguments["min_time"]),
+            arguments["inc_ext"]
+        )
+        report_data = _report(*metrics_data, arguments["color"], arguments["metrics"])
         return report_data
     except AppleTreeError:
         raise

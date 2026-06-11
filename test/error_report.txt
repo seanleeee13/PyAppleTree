@@ -1,15 +1,15 @@
 === 필요 ===
-- 색 배합 조절
-- analyze에 기본 tachyon 기능 추가
-- analyze에 리포트를 파일로 저장 추가
-- 데이터 분석 파트 C++ pybind11로 이전
+- 실시간 메세지가 잘리면 도배됨 [ERROR]
+- 분산 병목 상대평가 메세지 도입 [WARNING]
+- 가끔씩 _shutdown같은 놈들이 적발됨 [WARNING]
+- 가독성 좀 [WARNING]
+- analyze에 기본 tachyon 기능 추가 [FEATURE]
+- analyze에 리포트를 파일로 저장 추가 [FEATURE]
+- 데이터 분석 파트 C++ pybind11로 이전 [FEATURE]
     - 밸리데이팅: 파이썬 (sys.intern, is 연산자)
     - 카운팅: C++ (unordered_map)
     - Rust?
-- 실시간 메세지가 잘리면 도배됨
-- 분산 병목 상대평가 메세지 도입
-- 가끔씩 _shutdown같은 놈들이 적발됨
-- 가독성 좀
+- 색 배합 조절 [DESIGN]
 
 === 완료 ===
 - 실행이 빨리 끝나거나 (ctrl+c 포함) 에러가 나면 샘플이 안 모여서 에러가 남 [완료]

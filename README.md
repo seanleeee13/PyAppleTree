@@ -26,7 +26,8 @@ This is 2nd pull request for reversion 1 in alpha 0 (development) of version `1.
 
 ###### 1.0.0a0r1.2
 
-- TODO
+- Added `advanced` / `lab` mode
+- Classified features
 
 ###### 1.0.0a0r1.1
 
