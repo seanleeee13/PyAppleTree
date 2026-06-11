@@ -11,8 +11,12 @@ pip install PyAppleTree
 pip install https://github.com/seanleeee13/PyAppleTree.git
 ```
 ```
-pip install . (after cloning this project)
+pip install . & rem after cloning this project
 ```
+
+## Issues
+
+Please report issues into https://github.com/seanleeee13/PyAppleTree/issues/new
 
 ## Version
 
