@@ -1,4 +1,4 @@
-# PyAppleTree version 1.0.0a0r1.2
+# PyAppleTree version 1.0.0a0r1.3
 
 ![Python Version](https://img.shields.io/badge/python-3.15+-blue)
 
@@ -20,13 +20,15 @@ Please report issues into https://github.com/seanleeee13/PyAppleTree/issues/new
 
 ## Version
 
-This is 2nd pull request for reversion 1 in alpha 0 (development) of version `1.0.0`.
+This is 3rd pull request for reversion 1 in alpha 0 (development) of version `1.0.0`.
 
 ### Change Log
 
 #### 1.0.0a0
 
 ##### 1.0.0a0r1
+
+###### 1.0.0a0r1.3
 
 ###### 1.0.0a0r1.2
 
