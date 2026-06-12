@@ -13,7 +13,7 @@ class AppleTreeError(Exception):
         self.user_mistake = um
         super().__init__(self.message)
 
-class Color:
+class AppleTreeEnum:
     ORANGE = "\033[38;5;208m"
     GRAY = "\033[90m"
     RED = "\033[91m"
@@ -27,6 +27,7 @@ class Color:
     ITALIC = "\033[3m"
     UNDERLINE = "\033[4m"
     END = "\033[0m"
+    VERSION = "1.0.0a0.dev3"
 
 def tempfile_wrapper(func, *args, index=0, binary=True):
     with tempfile.NamedTemporaryFile("wb+" if binary else "w+", delete_on_close=False, delete=False) as f:

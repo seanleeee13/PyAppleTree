@@ -1,7 +1,7 @@
 translate_data = {
     "internal_error_title": "<red><bold>=== 오류 발생 ===<end>",
     "internal_error_report": "<purple><bold>다음 오류 메세지를 복사해 %(url)s 에 올려 주세요.<end>",
-    "argp_appletree_desc": "<red>PyAppleTree v1.0.0a0r1.3<end>: 코드 테스팅 & 환경 구축 프로그램",
+    "argp_appletree_desc": "<red><version><end>: 코드 테스팅 & 환경 구축 프로그램",
     "argp_select_mode": "모드 선택",
     "argp_run": "파이썬 코드 실행",
     "argp_file_path": "<green>타겟 파이썬 파일<end>",
