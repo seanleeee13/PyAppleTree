@@ -33,6 +33,7 @@ This is 2nd pull request for reversion 1 in alpha 0 (development) of version `1.
 - Added `advanced` / `lab` mode
 - Classified features
 - Optimizated metrics part
+- Added support for python 3.15.0b2
 
 ###### 1.0.0a0r1.1
 
