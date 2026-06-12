@@ -53,7 +53,7 @@ translate_data = {
     "analyze_lreport_normal": "<green>정상 - 이 줄은 비교적 정상적이나, 연산량이 다소 많을 수 있습니다.<end>",
     "analyze_report_title": "<purple><bold>===== PyAppleTree 분석 결과 =====<end>\n\n",
     "analyze_freport_title": "<cyan><bold>=== 함수 분석 ===<end>\n\n",
-    "analyze_freport_func": "<purple>점유율 %(rank)d위: <cyan>%(func)s<!br= 함수><end>",
+    "analyze_freport_func": "<purple>점유율 %(rank)d위: <cyan>%(location)s, %(func)s<!br= 함수><end>",
     "analyze_lreport_title": "<cyan><bold>=== 줄 분석 ===<end>\n\n",
     "analyze_lreport_line_rank": "<purple>점유율 %(rank)d위:<cyan> ",
     "analyze_lreport_line": "%(line)d번 줄 ",

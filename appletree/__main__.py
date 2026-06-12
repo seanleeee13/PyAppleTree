@@ -64,11 +64,10 @@ def main(name="appletree"):
                 "input": args.input,
                 "log": not args.without_log,
                 "color": not args.uncolored,
-                "metrics": args.metrics if arg.metrics else True if adv else False,
+                "metrics": args.metrics if args.metrics else True if adv else False,
                 "min_time": args.min_time if args.min_time else 10 if adv else 5,
                 "inc_ext": args.include_external if args.include_external else True if adv else False
             }
-            print(args.input)
             print(_analyze(args.file, arguments))
         except KeyboardInterrupt:
             pass
@@ -96,7 +95,9 @@ def main(name="appletree"):
 
 def json(args):
     sys.argv = args
-    # parser 코드들
+    raise NotImplementedError(
+        "JSON output is reserved for the upcoming AppleTree extension."
+    )
 
 if __name__ == "__main__":
     main(name="python -m appletree")

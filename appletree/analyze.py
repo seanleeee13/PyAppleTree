@@ -193,7 +193,6 @@ def analyze_new(filename, input_file, inc_ext=False, log=True, color=True, min_t
     try:
         start = time.perf_counter()
         AppleTreeBinaryCollector._appletree_start_t = start
-        AppleTreeBinaryCollector._appletree_target = filename
         AppleTreeBinaryCollector._appletree_inc_ext = inc_ext
         error_count = 0
         while time.perf_counter() - start <= min_time:
@@ -222,26 +221,23 @@ def analyze_new(filename, input_file, inc_ext=False, log=True, color=True, min_t
     finally:
         clean_prbc()
 
-def filter_samples(samples, inc_ext=False):
-    cwd = os.getcwd()
+def filter_samples(samples, target_file, inc_ext=False):
+    cwd = os.path.dirname(os.path.abspath(target_file))
     normal_count = Counter()
     stack_count = Counter()
     normal_count_func = Counter()
     stack_count_func = Counter()
     for loc in samples:
-        if inc_ext or loc[0].startswith(cwd):
+        if (inc_ext and not loc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or loc[0].startswith(cwd):
             lloc = tuple(loc[:3])
             floc = tuple(loc[::2])
             normal_count[lloc] += 1
             normal_count_func[floc] += 1
-            stack_count[lloc] += 1
-            stack_count_func[floc] += 1
-        for subloc in set(map(tuple, loc[3])) - set([tuple(loc[:3])]):
-            if inc_ext or subloc[0].startswith(cwd):
-                lsloc = tuple(subloc[:3])
-                fsloc = tuple(subloc[::2])
-                stack_count[lsloc] += 1
-                stack_count_func[fsloc] += 1
+            for subloc in set(map(tuple, loc[3])):
+                if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
+                    fsloc = tuple(subloc[::2])
+                    stack_count[subloc] += 1
+                    stack_count_func[fsloc] += 1
     return frozendict({
             "normal cnt": normal_count, "stack cnt": stack_count,
             "normal fcnt": normal_count_func, "stack fcnt": stack_count_func
@@ -273,9 +269,9 @@ def get_ftype(fdata):
     else:
         return (4, 1)
 
-def get_metrics(samples, inc_ext=False):
+def get_metrics(samples, target_file, inc_ext=False):
     try:
-        sample_counter = filter_samples(samples, inc_ext)
+        sample_counter = filter_samples(samples, target_file, inc_ext)
         metrics = {"lines": {}, "functions": {}}
         code_data = {"sample_cnt": sum(sample_counter["normal cnt"].values())}
         sum_ncnt = sum(sample_counter["normal cnt"].values())
@@ -319,14 +315,14 @@ def get_func_report(metrics, code_data, color=True):
     keys.sort(key=lambda k: metrics["functions"][k]["sample%"], reverse=True)
     for idx, key in enumerate(keys):
         data = metrics["functions"][key]["type"]
-        report[0][key] = [_(f"analyze_freport_{data[0]}_{data[1]}", color), idx + 1, metrics["functions"][key]["sample%"], data[0]]
-        report[0][key].append(metrics["functions"][key]["cumulative%"])
-        report[0][key].append(metrics["functions"][key]["magnification"])
+        report[0][key] = [
+            _(f"analyze_freport_{data[0]}_{data[1]}", color), idx + 1, metrics["functions"][key]["sample%"], data[0],
+            metrics["functions"][key]["cumulative%"], metrics["functions"][key]["magnification"]
+        ]
     return report
 
 def get_m_func_report(metrics, color=True):
     try:
-        report = [_("analyze_mfreport_title", color), "", ""]
         top = [0, ()]
         for key in metrics["functions"].keys():
             if top[0] < metrics["functions"][key]["sample%"]:
@@ -334,9 +330,11 @@ def get_m_func_report(metrics, color=True):
         if top == [0, ()]:
             return
         data = metrics["functions"][key]["type"]
-        report[1] = _("analyze_mfreport_func", color) % {"func": key[1], "br": key[1]}
-        report[2] = _(f"analyze_mfreport_{data[0]}_{data[1]}", color) % {"rate": float(metrics["functions"][key]["sample%"])}
-        return report
+        return [
+            _("analyze_mfreport_title", color),
+            _("analyze_mfreport_func", color) % {"func": key[1], "br": key[1]},
+            _(f"analyze_mfreport_{data[0]}_{data[1]}", color) % {"rate": float(metrics["functions"][key]["sample%"])}
+        ]
     except KeyboardInterrupt:
         raise
     except Exception as e:
@@ -383,7 +381,11 @@ def get_report(report_data, code_data, color=True, show_metrics=False):
             report += "\n\n"
         report += _("analyze_freport_title", color)
         for key in report_data[0].keys():
-            report += _("analyze_freport_func", color) % {"rank": report_data[0][key][1], "func": key[1], "br": key[1]} + "\n"
+            report += _("analyze_freport_func", color) % \
+                {
+                    "rank": report_data[0][key][1], "func": key[1],
+                    "br": key[1], "location": key[0]
+                } + "\n"
             for i in report_data[0][key][0]:
                 report += "  " + i + "\n"
             report += "  " + _(f"analyze_sample_rate_{report_data[0][key][3]}", color) % {"sample_rate": report_data[0][key][2]}
@@ -425,11 +427,10 @@ def _report(metrics, code_data, color=True, show_metrics=False):
     return get_report(line_report, code_data, color, show_metrics)
 
 def _analyze(filename, arguments):
-    # input_file=None, advanced=False, lab=False, log=True, color=True
     try:
         metrics_data = _metrics(
             _run(filename, arguments["input"], arguments["inc_ext"], arguments["log"], arguments["color"], arguments["min_time"]),
-            arguments["inc_ext"]
+            filename, arguments["inc_ext"]
         )
         report_data = _report(*metrics_data, arguments["color"], arguments["metrics"])
         return report_data
