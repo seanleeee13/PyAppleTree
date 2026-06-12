@@ -1,8 +1,8 @@
 === 필요 ===
 - 실시간 메세지가 잘리면 도배됨 [ERROR]
-- 현재 분석된 1위가 부정확함 [ERROR]
 - 분산 병목 상대평가 메세지 도입 [WARNING]
 - 가독성 좀 [WARNING]
+- python 3.15.0b2 상세 테스트 [WARNING]
 - 분석 결과 해석 강화 [FEATURE]
 - analyze에 기본 tachyon 기능 추가 [FEATURE]
 - analyze에 리포트를 파일로 저장 추가 [FEATURE]
@@ -21,3 +21,4 @@
 - 분석 중 keyboardinterrupt 처리 [완료]
 - python 3.15.0b1 상세 테스트 [완료]
 - 가끔씩 _shutdown같은 놈들이 적발됨 (pythoncore 배제) [완료]
+- 현재 분석된 1위가 부정확함 [완료]

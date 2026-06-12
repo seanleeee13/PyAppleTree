@@ -325,10 +325,12 @@ def get_m_func_report(metrics, color=True):
     try:
         top = [0, ()]
         for key in metrics["functions"].keys():
-            if top[0] < metrics["functions"][key]["sample%"]:
-                top = [metrics["functions"][key]["sample%"], key]
+            samplep = metrics["functions"][key]["sample%"]
+            if top[0] < samplep:
+                top = [samplep, key]
         if top == [0, ()]:
             return
+        key = top[1]
         data = metrics["functions"][key]["type"]
         return [
             _("analyze_mfreport_title", color),
@@ -347,27 +349,39 @@ def get_line_report(metrics, report, color=True):
     data = []
     for key in metrics["lines"].keys():
         data.append([metrics["lines"][key]["sample%"], key])
-    data.sort(key=lambda k: k[0], reverse=True)
     if len(data) == 0:
         raise AppleTreeError(
             "analyze/run#get_line_report.1", message=_("analyze_run_no_data"),
             err_message="Exception", um=True
         )
-    elif len(data) < 5:
+    data.sort(key=lambda k: k[0], reverse=True)
+    if len(data) <= 5:
         top_5 = data
     else:
         top_5 = data[:5]
     for i, p in enumerate(top_5):
-        match metrics["functions"][p[1][::2]]["type"]:
+        p1 = p[1]
+        match metrics["functions"][p1[::2]]["type"]:
             case (1, 1) | (3, 1) | (3, 2):
-                report[1][i + 1] = [p[1], _("analyze_lreport_overload", color), metrics["functions"][p[1][::2]]["sample%"], 1]
+                report[1][i + 1] = [
+                    p1, _("analyze_lreport_overload", color), metrics["lines"][p1]["sample%"], 1,
+                    metrics["lines"][p1]["cumulative%"]
+                ]
             case (2, 1) | (2, 2):
-                report[1][i + 1] = [p[1], _("analyze_lreport_large", color), metrics["functions"][p[1][::2]]["sample%"], 2]
+                report[1][i + 1] = [
+                    p1, _("analyze_lreport_large", color), metrics["lines"][p1]["sample%"], 2,
+                    metrics["lines"][p1]["cumulative%"]
+                ]
             case (2, 3):
-                report[1][i + 1] = [p[1], _("analyze_lreport_recursion", color), metrics["functions"][p[1][::2]]["sample%"], 3]
+                report[1][i + 1] = [
+                    p1, _("analyze_lreport_recursion", color), metrics["lines"][p1]["sample%"], 3,
+                    metrics["lines"][p1]["cumulative%"]
+                ]
             case (4, 1):
-                report[1][i + 1] = [p[1], _("analyze_lreport_normal", color), metrics["functions"][p[1][::2]]["sample%"], 4]
-        report[1][i + 1].append(metrics["functions"][p[1][::2]]["cumulative%"])
+                report[1][i + 1] = [
+                    p1, _("analyze_lreport_normal", color), metrics["lines"][p1]["sample%"], 4,
+                    metrics["lines"][p1]["cumulative%"]
+                ]
     return report
 
 def get_report(report_data, code_data, color=True, show_metrics=False):

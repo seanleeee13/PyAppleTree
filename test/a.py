@@ -4,26 +4,26 @@ def a():
     return a
 
 def b():
-    for i in range(11000):
-        a = 1 + i
-    return a
-
-def c():
     for i in range(12000):
         a = 1 + i
     return a
 
-def d():
-    for i in range(13000):
-        a = 1 + i
-    return a
-
-def e():
+def c():
     for i in range(14000):
         a = 1 + i
     return a
 
-for i in range(1000):
+def d():
+    for i in range(16000):
+        a = 1 + i
+    return a
+
+def e():
+    for i in range(18000):
+        a = 1 + i
+    return a
+
+for i in range(10000):
     a()
     b()
     c()
