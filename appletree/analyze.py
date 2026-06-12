@@ -65,8 +65,8 @@ class AppleTreeBinaryCollector(BinaryCollector):
                 "slash": " / " if self._appletree_msg.strip() else "",
                 "msg_part": self._appletree_msg
             }
+            sys.__stdout__.write(message + " " * (2 * max(0, self._appletree_msg_len - len(message))))
             self._appletree_msg_len = len(message)
-            sys.__stdout__.write(message)
         try:
             for interp in stack_frames:
                 for thread in interp.threads:
