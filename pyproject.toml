@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyAppleTree"
+version = "1.0.0a0.dev3"
+description = "Python Runtime Overall Operating Toolkit / Analyze, Prepare, Profile, Log, Explain"
+readme = "README.md"
+requires-python = ">=3.15"
+authors = [
+    { name = "seanleeee13" }
+]
+dependencies = []
+
+[project.scripts]
+pyappletree = "appletree.__main__:main"
+appletree = "appletree.__main__:main"
+
+[tool.setuptools]
+packages = ["appletree"]
