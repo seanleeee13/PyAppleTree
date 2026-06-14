@@ -1,10 +1,11 @@
 # PyAppleTree version 1.0.0a0.dev5
 
-[![Version](https://img.shields.io/badge/pypi-v1.0.0a0.dev5-orange)](https://pypi.org/project/PyAppleTree)
+[![Version](https://img.shields.io/badge/pypi-v1.0.0a0.dev6-orange)](https://pypi.org/project/PyAppleTree)
 [![Python Version](https://img.shields.io/badge/python-3.15+-blue)](https://pypi.org/project/PyAppleTree)
 [![License](https://img.shields.io/badge/license-MIT-white)](https://pypi.org/project/PyAppleTree)
 
 > **Python Runtime Overall Operating Toolkit**
+
 > Analyze, Prepare, Profile, Log, Explain.
 
 ## Features
@@ -21,7 +22,7 @@
 pip install PyAppleTree --pre
 ```
 ```
-pip install PyAppleTree==1.0.0a0.dev4
+pip install PyAppleTree==1.0.0a0.dev5
 ```
 ```
 pip install git+https://github.com/seanleeee13/PyAppleTree.git

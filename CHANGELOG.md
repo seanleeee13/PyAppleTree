@@ -2,6 +2,10 @@
 
 ## 1.0.0a0
 
+### 1.0.0a0.dev6
+
+- Deleted typo
+
 ### 1.0.0a0.dev5
 
 - Added more details in README.md
