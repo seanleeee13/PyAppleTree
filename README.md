@@ -28,7 +28,9 @@ This is reversion 3 in alpha 0 (development) of version `1.0.0`.
 
 ##### 1.0.0a0.dev3
 
-- TODO
+- Redesigned colors
+- Optimized report part
+- Fixed various bugs
 
 ##### 1.0.0a0.dev2
 
