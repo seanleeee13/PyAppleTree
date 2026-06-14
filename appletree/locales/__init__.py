@@ -1,5 +1,5 @@
+lazy from ..utils import AppleTreeEnum
 lazy from ..config import get_config
-lazy from ..utils import Color
 lazy from pathlib import Path
 lazy import importlib
 lazy import gettext
@@ -66,7 +66,7 @@ def get_data(p, color=True):
     try:
         if p.startswith("br=") or p.startswith("!br="):
             return sstr(f"%({p})s")
-        return getattr(Color, p.upper()) if color else ""
+        return getattr(AppleTreeEnum, p.upper()) if color else ""
     except:
         return ""
 

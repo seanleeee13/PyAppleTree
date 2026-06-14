@@ -38,7 +38,7 @@ def main(name="appletree"):
         debug_parser = subparsers.add_parser("debug", help=_("argp_debug"))
         debug_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
         debug_parser.add_argument("-i", "--input", help=_("argp_input_file"), type=is_file)
-        analyze_parser = subparsers.add_parser("analyze", help=_("argp_analyze"))
+        analyze_parser = subparsers.add_parser("analyze", help=_("argp_analyze"), description=_("argp_analyze_desc"))
         analyze_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
         analyze_parser.add_argument("-i", "--input", help=_("argp_input_file"), type=is_file)
         analyze_parser.add_argument("-C", "--uncolored", help=_("argp_uncolored"), action="store_true")

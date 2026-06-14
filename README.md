@@ -1,4 +1,4 @@
-# PyAppleTree version 1.0.0a0r1.2
+# PyAppleTree version 1.0.0a0.dev3
 
 ![Python Version](https://img.shields.io/badge/python-3.15+-blue)
 
@@ -20,26 +20,30 @@ Please report issues into https://github.com/seanleeee13/PyAppleTree/issues/new
 
 ## Version
 
-This is 2nd pull request for reversion 1 in alpha 0 (development) of version `1.0.0`.
+This is reversion 3 in alpha 0 (development) of version `1.0.0`.
 
 ### Change Log
 
 #### 1.0.0a0
 
-##### 1.0.0a0r1
+##### 1.0.0a0.dev3
 
-###### 1.0.0a0r1.2
+- Redesigned colors
+- Optimized report part
+- Fixed various bugs
+
+##### 1.0.0a0.dev2
 
 - Added `advanced` / `lab` mode
 - Classified features
 - Optimizated metrics part
 - Added support for python 3.15.0b2
 
-###### 1.0.0a0r1.1
+##### 1.0.0a0.dev1
 
 - Better translation, added readme
 - Merged `analyze` folder into one file
 
-###### 1.0.0a0r1.0
+##### 1.0.0a0.dev0
 
 - First Version

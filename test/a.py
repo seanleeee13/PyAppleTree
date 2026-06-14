@@ -23,9 +23,19 @@ def e():
         a = 1 + i
     return a
 
+def f(x):
+    if x <= 0:
+        return 0
+    x = min(x, 25)
+    a = 0
+    for i in range(x):
+        a += i + f(i)
+    return a
+
 for i in range(10000):
     a()
     b()
     c()
     d()
     e()
+    f(i)
