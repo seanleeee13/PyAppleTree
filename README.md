@@ -1,49 +1,43 @@
-# PyAppleTree version 1.0.0a0.dev3
+# PyAppleTree version 1.0.0a0.dev5
 
-![Python Version](https://img.shields.io/badge/python-3.15+-blue)
+[![Version](https://img.shields.io/badge/pypi-v1.0.0a0.dev5-orange)](https://pypi.org/project/PyAppleTree)
+[![Python Version](https://img.shields.io/badge/python-3.15+-blue)](https://pypi.org/project/PyAppleTree)
+[![License](https://img.shields.io/badge/license-MIT-white)](https://pypi.org/project/PyAppleTree)
+
+> **Python Runtime Overall Operating Toolkit**
+> Analyze, Prepare, Profile, Log, Explain.
+
+## Features
+
+- Profiling projects
+    - By using python built-in `profiling.sampling` package, this program has no requirements, requires zero modification, and has low overhead.
+- Translation
+    - This program has outstanding translation.
+    - This program supports Korean. (No English yet; sorry)
 
 ## Install
 
 ```
-pip install PyAppleTree
+pip install PyAppleTree --pre
 ```
 ```
-pip install https://github.com/seanleeee13/PyAppleTree.git
+pip install PyAppleTree==1.0.0a0.dev4
 ```
 ```
-pip install . & rem after cloning this project
+pip install git+https://github.com/seanleeee13/PyAppleTree.git
+```
+
+## Usage
+
+```
+# Basic mode
+python -m appletree analyze test.py
+```
+```
+# Advanced mode
+python -m appletree analyze -a test.py
 ```
 
 ## Issues
 
 Please report issues into https://github.com/seanleeee13/PyAppleTree/issues/new
-
-## Version
-
-This is reversion 3 in alpha 0 (development) of version `1.0.0`.
-
-### Change Log
-
-#### 1.0.0a0
-
-##### 1.0.0a0.dev3
-
-- Redesigned colors
-- Optimized report part
-- Fixed various bugs
-
-##### 1.0.0a0.dev2
-
-- Added `advanced` / `lab` mode
-- Classified features
-- Optimizated metrics part
-- Added support for python 3.15.0b2
-
-##### 1.0.0a0.dev1
-
-- Better translation, added readme
-- Merged `analyze` folder into one file
-
-##### 1.0.0a0.dev0
-
-- First Version
