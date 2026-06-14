@@ -1,12 +1,15 @@
-=== 1.0.0a0.dev5 목표 ===
+=== 1.0.0a0.dev8 목표 ===
 
 === 필요 ===
 - 실시간 메세지가 잘리면 도배됨 [ERROR]
     - 실시간 메세지 공백도 도배됨
+- 재귀함수 오판 해결 [ERROR]
+- 분석 불가능한 경우가 정상 함수처럼 보임 [WARNING]
 - 분산 병목 상대평가 메세지 도입 [WARNING]
-- 가독성 좀 [WARNING]
-    - 표 기능 추가
-- 재귀함수 오판 해결 [WARNING]
+- 표 기능 추가 [WARNING]
+- 분석 결과 확신도 (맞을 확률) 추가 [WARNING]
+- 보여주는 줄 순위의 개수를 동적으로 변경 [WARNING]
+- line 분석이 function 분석 결과를 상속 해결 [WARNING]
 - 분석 결과 해석 강화 [FEATURE]
 - analyze에 기본 tachyon 기능 추가 [FEATURE]
 - analyze에 리포트를 파일로 저장 추가 [FEATURE]
@@ -14,6 +17,10 @@
     - 밸리데이팅: 파이썬 (sys.intern, is 연산자)
     - 카운팅: C++ (unordered_map)
     - Rust?
+- 상호 배타적 함수 유형 (다중 유형) 기능 추가 [FEATURE]
+- 점유율 순위에 대한 이유 추가 설명 [FEATURE]
+- 샘플 수 기준이 동적 변경 및 샘플 수에 따른 오차도 표시 [FEATURE]
+- 가독성 좀 [FEATURE]
 
 === 완료 ===
 - 실행이 빨리 끝나거나 (ctrl+c 포함) 에러가 나면 샘플이 안 모여서 에러가 남 [완료]
