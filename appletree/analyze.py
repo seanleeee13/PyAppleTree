@@ -7,6 +7,7 @@ lazy from unittest.mock import patch
 lazy from .locales import _, _e
 lazy import subprocess
 lazy import traceback
+lazy import heapq
 lazy import time
 lazy import sys
 lazy import os
@@ -40,6 +41,7 @@ class AppleTreeBinaryCollector(BinaryCollector):
     _appletree_msg = ""
     _appletree_msg_len = 0
     _appletree_samples = []
+    _appletree_filtered = None
     _appletree_log = True
     _appletree_target = ""
     _appletree_inc_ext = False
@@ -50,10 +52,13 @@ class AppleTreeBinaryCollector(BinaryCollector):
         if self._appletree_log:
             self._appletree_cnt += 1
             if self._appletree_cnt % 50 == 0:
-                lst = get_m_func_report(get_metrics(
+                metrics = get_metrics(
                     self._appletree_samples, self._appletree_target,
-                    self._appletree_inc_ext)[0], self._appletree_color
+                    self._appletree_inc_ext, self._appletree_filtered
                 )
+                self._appletree_samples = []
+                self._appletree_filtered = metrics[1]
+                lst = get_m_func_report(metrics[0][0], self._appletree_color)
                 if lst:
                     self._appletree_msg = " ".join(lst)
             seconds = int(time.perf_counter() - self._appletree_start_t)
@@ -76,7 +81,7 @@ class AppleTreeBinaryCollector(BinaryCollector):
                     if top.filename == "~" or top.location is None:
                         continue
                     current_loc = [top.filename, top.location[0], top.funcname]
-                    full_stack = []
+                    full_stack = [current_loc]
                     for frame in thread.frame_info:
                         if frame.filename == "~" or frame.location is None:
                             continue
@@ -87,7 +92,7 @@ class AppleTreeBinaryCollector(BinaryCollector):
                         ])
                     self._appletree_samples.append([*current_loc, full_stack])
         except:
-            sys.__stdout__.write(traceback.format_exc() + str(stack_frames))
+            pass
         return super().collect(stack_frames, timestamp_us)
 
 used_prbc = None
@@ -109,6 +114,7 @@ def get_prbc(log=True, color=True):
                 _used_prbc._appletree_samples = used_prbc._appletree_samples
                 _used_prbc._appletree_target = used_prbc._appletree_target
                 _used_prbc._appletree_inc_ext = used_prbc._appletree_inc_ext
+                _used_prbc._appletree_filtered = used_prbc._appletree_filtered
             used_prbc = _used_prbc
             prbc_args = args
             prbc_kwargs = kwargs
@@ -207,11 +213,11 @@ def analyze_new(filename, input_file, inc_ext=False, log=True, color=True, min_t
                     break
         if log:
             print("\r" + " " * 175 + "\r", end="")
-        return used_prbc._appletree_samples
+        return used_prbc._appletree_samples, used_prbc._appletree_filtered
     except KeyboardInterrupt:
         if log:
             print("\r" + " " * 175 + "\r", end="")
-        return used_prbc._appletree_samples
+        return used_prbc._appletree_samples, used_prbc._appletree_filtered
     except AppleTreeError:
         print("\r" + " " * 175 + "\r", end="")
         raise
@@ -221,27 +227,28 @@ def analyze_new(filename, input_file, inc_ext=False, log=True, color=True, min_t
     finally:
         clean_prbc()
 
-def filter_samples(samples, target_file, inc_ext=False):
+def filter_samples(samples, target_file, inc_ext=False, cache=None):
     cwd = os.path.dirname(os.path.abspath(target_file))
-    normal_count = Counter()
-    stack_count = Counter()
-    normal_count_func = Counter()
-    stack_count_func = Counter()
+    if cache is None:
+        cache = {
+            "normal cnt": Counter(), "stack cnt": Counter(),
+            "normal fcnt": Counter(), "stack fcnt": Counter(),
+            "sample cnt": 0
+        }
     for loc in samples:
+        cache["sample cnt"] += 1
         if (inc_ext and not loc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or loc[0].startswith(cwd):
             lloc = tuple(loc[:3])
             floc = tuple(loc[::2])
-            normal_count[lloc] += 1
-            normal_count_func[floc] += 1
+            cache["normal cnt"][lloc] += 1
+            cache["normal fcnt"][floc] += 1
             for subloc in set(map(tuple, loc[3])):
                 if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
-                    fsloc = tuple(subloc[::2])
-                    stack_count[subloc] += 1
-                    stack_count_func[fsloc] += 1
-    return frozendict({
-            "normal cnt": normal_count, "stack cnt": stack_count,
-            "normal fcnt": normal_count_func, "stack fcnt": stack_count_func
-        })
+                    cache["stack cnt"][subloc] += 1
+            for subloc in set(map(lambda x: tuple(x[::2]), loc[3])):
+                if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
+                    cache["stack fcnt"][subloc] += 1
+    return cache
 
 def get_ftype(fdata):
     if fdata["sample%"] >= 75 and fdata["magnification"] <= 1.1:
@@ -269,11 +276,11 @@ def get_ftype(fdata):
     else:
         return (4, 1)
 
-def get_metrics(samples, target_file, inc_ext=False):
+def get_metrics(samples, target_file, inc_ext=False, cache=None):
     try:
-        sample_counter = filter_samples(samples, target_file, inc_ext)
+        sample_counter = filter_samples(samples, target_file, inc_ext, cache)
         metrics = {"lines": {}, "functions": {}}
-        code_data = {"sample_cnt": sum(sample_counter["normal cnt"].values())}
+        code_data = {"sample_cnt": sample_counter["sample cnt"]}
         sum_ncnt = sum(sample_counter["normal cnt"].values())
         sum_fncnt = sum(sample_counter["normal fcnt"].values())
         for loc in sample_counter["stack cnt"].keys():
@@ -285,15 +292,15 @@ def get_metrics(samples, target_file, inc_ext=False):
             metrics["lines"][loc] = {
                 "samples": ncnt,
                 "cumulatives": scnt,
-                "sample%": 100 * ncnt / sum_ncnt if sum_ncnt else 2147483647.0 if ncnt else 0.0,
-                "cumulative%": 100 * scnt / sum_ncnt if sum_ncnt else 2147483647.0 if scnt else 0.0
+                "sample%": 100 * ncnt / sum_ncnt if sum_ncnt else float("inf") if ncnt else 0.0,
+                "cumulative%": 100 * scnt / sum_ncnt if sum_ncnt else float("inf") if scnt else 0.0
             }
             metrics["functions"][loc2] = {
                 "samples": fncnt,
                 "cumulatives": fscnt,
-                "sample%": 100 * fncnt / sum_fncnt if sum_fncnt else 2147483647.0 if fncnt else 0.0,
-                "cumulative%": 100 * fscnt / sum_fncnt if sum_fncnt else 2147483647.0 if fscnt else 0.0,
-                "magnification": fscnt / fncnt if fncnt else 2147483647.0 if fscnt else 0.0
+                "sample%": 100 * fncnt / sum_fncnt if sum_fncnt else float("inf") if fncnt else 0.0,
+                "cumulative%": 100 * fscnt / sum_fncnt if sum_fncnt else float("inf") if fscnt else 0.0,
+                "magnification": fscnt / fncnt if fncnt else float("inf") if fscnt else 0.0
             }
             metrics["functions"][loc2]["type"] = get_ftype(metrics["functions"][loc2])
     except KeyboardInterrupt:
@@ -305,7 +312,7 @@ def get_metrics(samples, target_file, inc_ext=False):
             "analyze/metrics#get_metrics.1", message="Error while calculating metrics",
             err_message=traceback.format_exc(), um=False
         ) from e
-    return metrics, code_data
+    return (metrics, code_data), sample_counter
 
 def get_func_report(metrics, code_data, color=True):
     report = [{}, {}, []]
@@ -346,21 +353,15 @@ def get_m_func_report(metrics, color=True):
         ) from e
 
 def get_line_report(metrics, report, color=True):
-    data = []
-    for key in metrics["lines"].keys():
-        data.append([metrics["lines"][key]["sample%"], key])
-    if len(data) == 0:
+    item = metrics["lines"].items()
+    if len(item) == 0:
         raise AppleTreeError(
             "analyze/run#get_line_report.1", message=_("analyze_run_no_data"),
             err_message="Exception", um=True
         )
-    data.sort(key=lambda k: k[0], reverse=True)
-    if len(data) <= 5:
-        top_5 = data
-    else:
-        top_5 = data[:5]
+    top_5 = heapq.nlargest(5, item, key=lambda x: x[1]["sample%"])
     for i, p in enumerate(top_5):
-        p1 = p[1]
+        p1 = p[0]
         match metrics["functions"][p1[::2]]["type"]:
             case (1, 1) | (3, 1) | (3, 2):
                 report[1][i + 1] = [
@@ -442,10 +443,8 @@ def _report(metrics, code_data, color=True, show_metrics=False):
 
 def _analyze(filename, arguments):
     try:
-        metrics_data = _metrics(
-            _run(filename, arguments["input"], arguments["inc_ext"], arguments["log"], arguments["color"], arguments["min_time"]),
-            filename, arguments["inc_ext"]
-        )
+        samples, cache = _run(filename, arguments["input"], arguments["inc_ext"], arguments["log"], arguments["color"], arguments["min_time"])
+        metrics_data = _metrics(samples, filename, arguments["inc_ext"], cache)[0]
         report_data = _report(*metrics_data, arguments["color"], arguments["metrics"])
         return report_data
     except AppleTreeError:
