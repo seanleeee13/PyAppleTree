@@ -66,10 +66,18 @@ translate_data = {
     "analyze_cumulative_rate_2": "<orange><bold>, 스택 점유율: %(cumulative_rate).1f%%<end>",
     "analyze_cumulative_rate_3": "<yellow>, 스택 점유율: %(cumulative_rate).1f%%<end>",
     "analyze_cumulative_rate_4": "<green>, 스택 점유율: %(cumulative_rate).1f%%<end>",
+    "analyze_mcumulative_rate_1": "<red><bold>, 다중 스택 점유율: %(mcumulative_rate).1f%%<end>",
+    "analyze_mcumulative_rate_2": "<orange><bold>, 다중 스택 점유율: %(mcumulative_rate).1f%%<end>",
+    "analyze_mcumulative_rate_3": "<yellow>, 다중 스택 점유율: %(mcumulative_rate).1f%%<end>",
+    "analyze_mcumulative_rate_4": "<green>, 다중 스택 점유율: %(mcumulative_rate).1f%%<end>",
     "analyze_magnification_1": "<red><bold>, 증폭률: %(magnification).1f<end>",
     "analyze_magnification_2": "<orange><bold>, 증폭률: %(magnification).1f<end>",
     "analyze_magnification_3": "<yellow>, 증폭률: %(magnification).1f<end>",
     "analyze_magnification_4": "<green>, 증폭률: %(magnification).1f<end>",
+    "analyze_smagnification_1": "<red><bold>, 스택 증폭률: %(smagnification).1f<end>",
+    "analyze_smagnification_2": "<orange><bold>, 스택 증폭률: %(smagnification).1f<end>",
+    "analyze_smagnification_3": "<yellow>, 스택 증폭률: %(smagnification).1f<end>",
+    "analyze_smagnification_4": "<green>, 스택 증폭률: %(smagnification).1f<end>",
     "analyze_report_warning": [
         "<yellow>코드의 종류와 목적에 따라 분석의 기준은 달라질 수 있습니다.<end>\n",
         "<yellow>더욱 전문적인 분석을 위해서는 전문가에게 분석받는 것을 추천드립니다.<end>\n"
