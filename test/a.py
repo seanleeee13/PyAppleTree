@@ -1,3 +1,5 @@
+# from functools import lru_cache
+
 def a():
     for i in range(10000):
         a = 1 + i
@@ -23,6 +25,7 @@ def e():
         a = 1 + i
     return a
 
+# @lru_cache(maxsize=None)
 def f(x):
     if x <= 0:
         return 0

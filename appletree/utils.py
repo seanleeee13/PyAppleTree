@@ -27,7 +27,7 @@ class AppleTreeEnum:
     ITALIC = "\033[3m"
     UNDERLINE = "\033[4m"
     END = "\033[0m"
-    VERSION = "1.0.0a0.dev3"
+    VERSION = AppleTreeVersion
 
 def tempfile_wrapper(func, *args, index=0, binary=True):
     with tempfile.NamedTemporaryFile("wb+" if binary else "w+", delete_on_close=False, delete=False) as f:

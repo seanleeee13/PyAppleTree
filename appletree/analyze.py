@@ -81,7 +81,7 @@ class AppleTreeBinaryCollector(BinaryCollector):
                     if top.filename == "~" or top.location is None:
                         continue
                     current_loc = [top.filename, top.location[0], top.funcname]
-                    full_stack = [current_loc]
+                    full_stack = []
                     for frame in thread.frame_info:
                         if frame.filename == "~" or frame.location is None:
                             continue
@@ -233,6 +233,7 @@ def filter_samples(samples, target_file, inc_ext=False, cache=None):
         cache = {
             "normal cnt": Counter(), "stack cnt": Counter(),
             "normal fcnt": Counter(), "stack fcnt": Counter(),
+            "multi stack cnt": Counter(), "multi stack fcnt": Counter(),
             "sample cnt": 0
         }
     for loc in samples:
@@ -242,36 +243,74 @@ def filter_samples(samples, target_file, inc_ext=False, cache=None):
             floc = tuple(loc[::2])
             cache["normal cnt"][lloc] += 1
             cache["normal fcnt"][floc] += 1
+            cache["stack cnt"][lloc] += 1
+            cache["stack fcnt"][floc] += 1
             for subloc in set(map(tuple, loc[3])):
                 if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
+                    if (subloc is lloc):
+                        continue
                     cache["stack cnt"][subloc] += 1
             for subloc in set(map(lambda x: tuple(x[::2]), loc[3])):
                 if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
+                    if (subloc is floc):
+                        continue
                     cache["stack fcnt"][subloc] += 1
+            for subloc in map(tuple, loc[3]):
+                if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
+                    cache["multi stack cnt"][subloc] += 1
+            for subloc in map(lambda x: tuple(x[::2]), loc[3]):
+                if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
+                    cache["multi stack fcnt"][subloc] += 1
     return cache
 
 def get_ftype(fdata):
-    if fdata["sample%"] >= 75 and fdata["magnification"] <= 1.1:
+    if fdata["sample%"] >= 75 and fdata["stack magnification"] <= 1.1:
         return (1, 1)
-    elif 75 > fdata["sample%"] >= 60 and fdata["magnification"] <= 1.15:
+    elif 75 > fdata["sample%"] >= 60 and fdata["stack magnification"] <= 1.15:
         return (1, 1)
-    elif 60 > fdata["sample%"] >= 25 and fdata["magnification"] <= 1.25:
+    elif 60 > fdata["sample%"] >= 25 and fdata["stack magnification"] <= 1.25:
         return (3, 1)
-    elif 25 > fdata["sample%"] >= 10 and 1.25 >= fdata["magnification"] > 1.15:
+    elif 25 > fdata["sample%"] >= 10 and 1.25 >= fdata["stack magnification"] > 1.15:
         return (3, 2)
-    elif fdata["sample%"] >= 75 and 1.25 >= fdata["magnification"] > 1.1:
+    elif fdata["sample%"] >= 75 and 1.25 >= fdata["stack magnification"] > 1.1:
         return (2, 1)
-    elif fdata["sample%"] >= 60 and 1.225 >= fdata["magnification"] > 1.15:
+    elif fdata["sample%"] >= 60 and 1.225 >= fdata["stack magnification"] > 1.15:
         return (2, 1)
-    elif fdata["sample%"] >= 40 and 1.5 > fdata["magnification"] > 1.25:
+    elif fdata["sample%"] >= 40 and 1.5 > fdata["stack magnification"] > 1.25:
         return (2, 1)
-    elif fdata["sample%"] < 40 and fdata["magnification"] > 1.25:
+    elif fdata["sample%"] < 40 and fdata["stack magnification"] > 1.25:
         return (2, 2)
-    elif fdata["sample%"] >= 40 and fdata["magnification"] >= 1.5:
+    elif fdata["sample%"] >= 40 and fdata["stack magnification"] >= 1.5:
         return (2, 3)
-    elif fdata["sample%"] >= 60 and fdata["magnification"] >= 1.225:
+    elif fdata["sample%"] >= 60 and fdata["stack magnification"] >= 1.225:
         return (2, 3)
-    elif fdata["sample%"] >= 75 and fdata["magnification"] >= 1.25:
+    elif fdata["sample%"] >= 75 and fdata["stack magnification"] >= 1.25:
+        return (2, 3)
+    else:
+        return (4, 1)
+
+def get_ltype(fdata):
+    if fdata["sample%"] >= 75 and fdata["stack magnification"] <= 1.1:
+        return (1, 1)
+    elif 75 > fdata["sample%"] >= 60 and fdata["stack magnification"] <= 1.15:
+        return (1, 1)
+    elif 60 > fdata["sample%"] >= 25 and fdata["stack magnification"] <= 1.25:
+        return (3, 1)
+    elif 25 > fdata["sample%"] >= 10 and 1.25 >= fdata["stack magnification"] > 1.15:
+        return (3, 2)
+    elif fdata["sample%"] >= 75 and 1.25 >= fdata["stack magnification"] > 1.1:
+        return (2, 1)
+    elif fdata["sample%"] >= 60 and 1.225 >= fdata["stack magnification"] > 1.15:
+        return (2, 1)
+    elif fdata["sample%"] >= 40 and 1.5 > fdata["stack magnification"] > 1.25:
+        return (2, 1)
+    elif fdata["sample%"] < 40 and fdata["stack magnification"] > 1.25:
+        return (2, 2)
+    elif fdata["sample%"] >= 40 and fdata["stack magnification"] >= 1.5:
+        return (2, 3)
+    elif fdata["sample%"] >= 60 and fdata["stack magnification"] >= 1.225:
+        return (2, 3)
+    elif fdata["sample%"] >= 75 and fdata["stack magnification"] >= 1.25:
         return (2, 3)
     else:
         return (4, 1)
@@ -289,18 +328,26 @@ def get_metrics(samples, target_file, inc_ext=False, cache=None):
             scnt = sample_counter["stack cnt"].get(loc, 0)
             fncnt = sample_counter["normal fcnt"].get(loc2, 0)
             fscnt = sample_counter["stack fcnt"].get(loc2, 0)
+            mscnt = sample_counter["multi stack cnt"].get(loc, 0)
+            mfscnt = sample_counter["multi stack fcnt"].get(loc2, 0)
             metrics["lines"][loc] = {
                 "samples": ncnt,
                 "cumulatives": scnt,
                 "sample%": 100 * ncnt / sum_ncnt if sum_ncnt else float("inf") if ncnt else 0.0,
-                "cumulative%": 100 * scnt / sum_ncnt if sum_ncnt else float("inf") if scnt else 0.0
+                "cumulative%": 100 * scnt / sum_ncnt if sum_ncnt else float("inf") if scnt else 0.0,
+                "multi-cumulative%": 100 * mscnt / sum_ncnt if sum_ncnt else float("inf") if scnt else 0.0,
+                "magnification": scnt / ncnt if ncnt else float("inf") if scnt else 0.0,
+                "stack magnification": mscnt / ncnt if ncnt else float("inf") if mscnt else 0.0
             }
+            metrics["lines"][loc]["type"] = get_ltype(metrics["lines"][loc])
             metrics["functions"][loc2] = {
                 "samples": fncnt,
                 "cumulatives": fscnt,
                 "sample%": 100 * fncnt / sum_fncnt if sum_fncnt else float("inf") if fncnt else 0.0,
                 "cumulative%": 100 * fscnt / sum_fncnt if sum_fncnt else float("inf") if fscnt else 0.0,
-                "magnification": fscnt / fncnt if fncnt else float("inf") if fscnt else 0.0
+                "multi-cumulative%": 100 * mfscnt / sum_fncnt if sum_fncnt else float("inf") if fscnt else 0.0,
+                "magnification": fscnt / fncnt if fncnt else float("inf") if fscnt else 0.0,
+                "stack magnification": mfscnt / fncnt if fncnt else float("inf") if mfscnt else 0.0
             }
             metrics["functions"][loc2]["type"] = get_ftype(metrics["functions"][loc2])
     except KeyboardInterrupt:
@@ -324,7 +371,8 @@ def get_func_report(metrics, code_data, color=True):
         data = metrics["functions"][key]["type"]
         report[0][key] = [
             _(f"analyze_freport_{data[0]}_{data[1]}", color), idx + 1, metrics["functions"][key]["sample%"], data[0],
-            metrics["functions"][key]["cumulative%"], metrics["functions"][key]["magnification"]
+            metrics["functions"][key]["cumulative%"], metrics["functions"][key]["magnification"],
+            metrics["functions"][key]["multi-cumulative%"], metrics["functions"][key]["stack magnification"]
         ]
     return report
 
@@ -362,26 +410,30 @@ def get_line_report(metrics, report, color=True):
     top_5 = heapq.nlargest(5, item, key=lambda x: x[1]["sample%"])
     for i, p in enumerate(top_5):
         p1 = p[0]
-        match metrics["functions"][p1[::2]]["type"]:
-            case (1, 1) | (3, 1) | (3, 2):
+        match metrics["lines"][p1]["type"]:
+            case (1, 1):
                 report[1][i + 1] = [
                     p1, _("analyze_lreport_overload", color), metrics["lines"][p1]["sample%"], 1,
-                    metrics["lines"][p1]["cumulative%"]
+                    metrics["lines"][p1]["cumulative%"], metrics["lines"][p1]["multi-cumulative%"],
+                    metrics["lines"][p1]["magnification"], metrics["lines"][p1]["stack magnification"]
                 ]
-            case (2, 1) | (2, 2):
+            case (2, 1) | (2, 2) | (2, 3):
                 report[1][i + 1] = [
                     p1, _("analyze_lreport_large", color), metrics["lines"][p1]["sample%"], 2,
-                    metrics["lines"][p1]["cumulative%"]
+                    metrics["lines"][p1]["cumulative%"], metrics["lines"][p1]["multi-cumulative%"],
+                    metrics["lines"][p1]["magnification"], metrics["lines"][p1]["stack magnification"]
                 ]
-            case (2, 3):
+            case (3, 1) | (3, 2):
                 report[1][i + 1] = [
                     p1, _("analyze_lreport_recursion", color), metrics["lines"][p1]["sample%"], 3,
-                    metrics["lines"][p1]["cumulative%"]
+                    metrics["lines"][p1]["cumulative%"], metrics["lines"][p1]["multi-cumulative%"],
+                    metrics["lines"][p1]["magnification"], metrics["lines"][p1]["stack magnification"]
                 ]
             case (4, 1):
                 report[1][i + 1] = [
                     p1, _("analyze_lreport_normal", color), metrics["lines"][p1]["sample%"], 4,
-                    metrics["lines"][p1]["cumulative%"]
+                    metrics["lines"][p1]["cumulative%"], metrics["lines"][p1]["multi-cumulative%"],
+                    metrics["lines"][p1]["magnification"], metrics["lines"][p1]["stack magnification"]
                 ]
     return report
 
@@ -407,6 +459,8 @@ def get_report(report_data, code_data, color=True, show_metrics=False):
             if show_metrics:
                 report += _(f"analyze_cumulative_rate_{report_data[0][key][3]}", color) % {"cumulative_rate": report_data[0][key][4]}
                 report += _(f"analyze_magnification_{report_data[0][key][3]}", color) % {"magnification": report_data[0][key][5]}
+                report += _(f"analyze_mcumulative_rate_{report_data[0][key][3]}", color) % {"mcumulative_rate": report_data[0][key][6]}
+                report += _(f"analyze_smagnification_{report_data[0][key][3]}", color) % {"smagnification": report_data[0][key][7]}
             report += "\n\n"
         report += _("analyze_lreport_title", color)
         for key in report_data[1].keys():
@@ -414,12 +468,15 @@ def get_report(report_data, code_data, color=True, show_metrics=False):
             report += _("analyze_lreport_line", color) % {"line": report_data[1][key][0][:2][1]}
             report += _("analyze_lreport_line_func", color) % \
                 {"func": report_data[1][key][0][2], "br": report_data[1][key][0][2]}
-            for i in report_data[1][key][1:-3]:
+            for i in report_data[1][key][1:-6]:
                 report += "  " + i + "\n"
-            report += "  " + _(f"analyze_sample_rate_{report_data[1][key][-2]}", color) % \
-                {"sample_rate": report_data[1][key][-3]}
+            report += "  " + _(f"analyze_sample_rate_{report_data[1][key][-5]}", color) % \
+                {"sample_rate": report_data[1][key][-6]}
             if show_metrics:
-                report += _(f"analyze_cumulative_rate_{report_data[1][key][-2]}", color) % {"cumulative_rate": report_data[1][key][-1]}
+                report += _(f"analyze_cumulative_rate_{report_data[1][key][-5]}", color) % {"cumulative_rate": report_data[1][key][-4]}
+                report += _(f"analyze_magnification_{report_data[1][key][-5]}", color) % {"magnification": report_data[1][key][-2]}
+                report += _(f"analyze_mcumulative_rate_{report_data[1][key][-5]}", color) % {"mcumulative_rate": report_data[1][key][-3]}
+                report += _(f"analyze_smagnification_{report_data[1][key][-5]}", color) % {"smagnification": report_data[1][key][-1]}
             report += "\n\n"
         report += "".join(_("analyze_report_warning", color))
     except AppleTreeError:
