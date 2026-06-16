@@ -1,4 +1,4 @@
-# PyAppleTree version 1.0.0a0.dev7
+# PyAppleTree version 1.0.0a0.dev8
 
 [![Version](https://img.shields.io/badge/pypi-v1.0.0a0.dev7-orange)](https://pypi.org/project/PyAppleTree)
 [![Python Version](https://img.shields.io/badge/python-3.15+-blue)](https://pypi.org/project/PyAppleTree)
@@ -24,10 +24,10 @@
 ## Install
 
 ```
-pip install PyAppleTree --pre
+pip install PyAppleTree
 ```
 ```
-pip install PyAppleTree==1.0.0a0.dev7
+pip install PyAppleTree==1.0.0a0.dev8
 ```
 ```
 pip install git+https://github.com/seanleeee13/PyAppleTree.git
