@@ -27,7 +27,8 @@ def normal():
 
 
 if __name__ == "__main__":
-    cpu_heavy()
-    many_calls()
-    recursive(28)
-    normal()
+    for i in range(20):
+        cpu_heavy()
+        many_calls()
+        recursive(28)
+        normal()

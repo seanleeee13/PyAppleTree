@@ -48,8 +48,8 @@ translate_data = {
     "analyze_mfreport_4_1": "<green>(점유율: %(rate).1f%%)<end> <cyan>/<end> " + \
         "<green>정상 - 별다른 부하를 주지 않는 정상적인 함수입니다. 데이터의 크기가 커지면 부하가 커질 수 있습니다.<end>",
     "analyze_lreport_overload": "<red><bold>연산 폭탄 - 이 줄의 연산량이 많습니다. 최적화를 통해 연산량을 줄여 주세요.<end>",
-    "analyze_lreport_large": "<orange><bold>병목 - 이 줄의 연산량이 많거나, 다른 무거운 함수를 많이 호출할 수 있습니다.<end>",
-    "analyze_lreport_recursion": "<yellow>재귀함수 - 재귀함수에서 자기자신을 호출하거나 큰 연산을 하는 곳으로 예상됩니다.<end>",
+    "analyze_lreport_large": "<orange><bold>병목 - 이 줄의 연산량이 많거나, 다른 무거운 함수를 많이 호출하고 있습니다. 재귀함수일 수도 있습니다.<end>",
+    "analyze_lreport_recursion": "<yellow>일꾼 - 적당한 정도의 부하가 되는 줄입니다. '연산 폭탄'과 '병목'을 고친 후에도 느리다면 고쳐 보세요.<end>",
     "analyze_lreport_normal": "<green>정상 - 이 줄은 비교적 정상적이나, 연산량이 다소 많을 수 있습니다.<end>",
     "analyze_report_title": "<purple><bold>===== PyAppleTree 분석 결과 =====<end>\n\n",
     "analyze_freport_title": "<cyan><bold>=== 함수 분석 ===<end>\n\n",
