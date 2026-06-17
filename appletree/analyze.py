@@ -121,6 +121,11 @@ def get_prbc(log=True, color=True):
         return used_prbc
     return _get_prbc
 
+def get_used_prbc():
+    if used_prbc is None:
+        return AppleTreeBinaryCollector("", 1)
+    return used_prbc
+
 def clean_prbc():
     global used_prbc, prbc_args, prbc_kwargs
     used_prbc = None
@@ -207,17 +212,17 @@ def analyze_new(filename, input_file, inc_ext=False, log=True, color=True, min_t
                 ret = sample_tempfile(filename, input_file, log, color)
             finally:
                 clean(ret)
-            if len(used_prbc._appletree_samples) == 0:
+            if len(get_used_prbc()._appletree_samples) == 0:
                 error_count += 1
                 if error_count >= 50:
                     break
         if log:
             print("\r" + " " * 175 + "\r", end="")
-        return used_prbc._appletree_samples, used_prbc._appletree_filtered
+        return get_used_prbc()._appletree_samples, get_used_prbc()._appletree_filtered
     except KeyboardInterrupt:
         if log:
             print("\r" + " " * 175 + "\r", end="")
-        return used_prbc._appletree_samples, used_prbc._appletree_filtered
+        return get_used_prbc()._appletree_samples, get_used_prbc()._appletree_filtered
     except AppleTreeError:
         print("\r" + " " * 175 + "\r", end="")
         raise
@@ -247,12 +252,12 @@ def filter_samples(samples, target_file, inc_ext=False, cache=None):
             cache["stack fcnt"][floc] += 1
             for subloc in set(map(tuple, loc[3])):
                 if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
-                    if (subloc is lloc):
+                    if (subloc == lloc):
                         continue
                     cache["stack cnt"][subloc] += 1
             for subloc in set(map(lambda x: tuple(x[::2]), loc[3])):
                 if (inc_ext and not subloc[0].startswith(tuple(["<frozen"] + sys.path[1:]))) or subloc[0].startswith(cwd):
-                    if (subloc is floc):
+                    if (subloc == floc):
                         continue
                     cache["stack fcnt"][subloc] += 1
             for subloc in map(tuple, loc[3]):
@@ -407,8 +412,12 @@ def get_line_report(metrics, report, color=True):
             "analyze/run#get_line_report.1", message=_("analyze_run_no_data"),
             err_message="Exception", um=True
         )
-    top_5 = heapq.nlargest(5, item, key=lambda x: x[1]["sample%"])
-    for i, p in enumerate(top_5):
+    top_11 = heapq.nlargest(11, item, key=lambda x: x[1]["sample%"])
+    sub = [
+        top_11[i][1]["sample%"] - top_11[i + 1][1]["sample%"]
+        for i in range(2, len(top_11) - 1)
+    ]
+    for i, p in enumerate(top_11[:sub.index(max(sub)) + 3]):
         p1 = p[0]
         match metrics["lines"][p1]["type"]:
             case (1, 1):

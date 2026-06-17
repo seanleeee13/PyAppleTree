@@ -3,7 +3,7 @@ lazy import tempfile
 lazy import atexit
 lazy import os
 
-AppleTreeVersion = "1.0.0a0.dev7"
+AppleTreeVersion = "1.0.0a0.dev8"
 
 class AppleTreeError(Exception):
     def __init__(self, code, message, err_message, um):

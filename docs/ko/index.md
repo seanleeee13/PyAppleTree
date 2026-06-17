@@ -8,6 +8,8 @@
 
 > Analyze, Prepare, Profile, Log, Explain.
 
+Lang: ko-kr
+
 ## Features
 
 - Profiling projects
