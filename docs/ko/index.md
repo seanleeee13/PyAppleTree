@@ -47,3 +47,10 @@ python -m appletree analyze -a test.py
 ## 오류 제보 및 기능 제안
 
 불편한 점이나 개선 사항은 https://github.com/seanleeee13/PyAppleTree/issues/new 로 제출해 주세요.
+
+```{toctree}
+:maxdepth: 2
+:caption: 업데이트 소식
+update/1.0.0
+update/changelog
+```

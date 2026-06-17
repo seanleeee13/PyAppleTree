@@ -8,6 +8,8 @@
 
 > Analyze, Prepare, Profile, Log, Explain.
 
+[Document (with translated readme)](https://pyappletree.readthedocs.io)
+
 ## Features
 
 - Profiling projects

@@ -47,3 +47,10 @@ python -m appletree analyze -a test.py
 ## Issues
 
 Please report issues into https://github.com/seanleeee13/PyAppleTree/issues/new
+
+```{toctree}
+:maxdepth: 2
+:caption: Update News
+update/1.0.0
+update/changelog
+```
