@@ -28,6 +28,7 @@ classifiers = [
 Repository = "https://github.com/seanleeee13/PyAppleTree"
 Issues = "https://github.com/seanleeee13/PyAppleTree/issues"
 Changelog = "https://github.com/blob/main/CHANGELOG.md"
+Documentation = "https://pyappletree.readthedocs.io/en/latest"
 
 [project.scripts]
 pyappletree = "appletree.__main__:main"
