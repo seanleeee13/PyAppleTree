@@ -5,7 +5,7 @@
 - 분석 결과 확신도 (맞을 확률) 추가 [WARNING] [4]
 - 표 기능 추가 [FEATURE] [6]
     - 함수, 줄 개수에 따라 표 여부를 동적으로 변경
-- readthedocs 작성 [WARNING] [7]
+- 문서 작성 [WARNING] [7]
 - 최적화 [FEATURE] [8]
 
 === 1.0.0a0.dev8 목표 (해결) ===
@@ -23,7 +23,7 @@
 - 분석 결과 확신도 (맞을 확률) 추가 [WARNING] [4]
 - 용어 수준을 나누고 조정, 'basic', 'advanced'를 이름 변경 [WARNING]
 - 샘플 수 기준이 동적 변경 및 샘플 수에 따른 오차도 표시 [WARNING]
-- readthedocs 작성 [WARNING] [7]
+- 문서 작성 [WARNING] [7]
 - 영어 추가 [WARNING]
 - 표 기능 추가 [FEATURE] [6]
     - 함수, 줄 개수에 따라 표 여부를 동적으로 변경
