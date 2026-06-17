@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyAppleTree"
-version = "1.0.0a0.dev7"
+version = "1.0.0a0.dev8"
 description = "Python Runtime Overall Operating Toolkit / Analyze, Prepare, Profile, Log, Explain"
 readme = "README.md"
 license = "MIT"

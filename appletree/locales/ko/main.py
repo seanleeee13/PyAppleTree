@@ -19,6 +19,7 @@ translate_data = {
     "argp_min_time": "<yellow>최소 실행 시간<end>",
     "argp_invalid_file_path": "'%(path)s'는 존재하지 않는 파일입니다.",
     "argp_inc_ext": "<yellow>작업 디렉토리 외부 파일 포함<end>",
+    "argp_version": "버전 출력",
     "argp_analyze_desc": "<red>코드 분석 기능<end> <cyan>/<end> <green>인자 설명이 초록색: 기본 기능<end> <cyan>/<end> <yellow>노란색: 상세 분석 기능<end> <cyan>/<end> <blue>파란색: 실험 기능<end>",
     "usage: ": "사용법: ",
     "positional arguments": "필수 인자",
