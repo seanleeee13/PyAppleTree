@@ -1,6 +1,6 @@
 # PyAppleTree version 1.0.0a0.dev8
 
-[![Version](https://img.shields.io/badge/pypi-v1.0.0a0.dev7-orange)](https://pypi.org/project/PyAppleTree)
+[![Version](https://img.shields.io/badge/pypi-v1.0.0a0.dev8-orange)](https://pypi.org/project/PyAppleTree)
 [![Python Version](https://img.shields.io/badge/python-3.15+-blue)](https://pypi.org/project/PyAppleTree)
 [![License](https://img.shields.io/badge/license-MIT-white)](https://pypi.org/project/PyAppleTree)
 
