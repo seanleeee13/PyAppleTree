@@ -1,5 +1,5 @@
 extensions = [
-    "myst_parser", 
+    "myst_parser"
 ]
 project = "PyAppleTree"
 copyright = "2026, seanleeeee13"
