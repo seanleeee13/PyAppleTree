@@ -1,52 +1,82 @@
-# PyAppleTree 버전 1.0.0a0.dev8
+# PyAppleTree: 유저 친화적 프로파일링 / 디버깅 툴킷
 
-[![Version](https://img.shields.io/badge/pypi-v1.0.0a0.dev8-orange)](https://pypi.org/project/PyAppleTree)
-[![Python Version](https://img.shields.io/badge/python-3.15+-blue)](https://pypi.org/project/PyAppleTree)
-[![License](https://img.shields.io/badge/license-MIT-white)](https://pypi.org/project/PyAppleTree)
+[![PyPI version](https://img.shields.io/pypi/v/PyAppleTree.svg)](https://pypi.org)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/PyAppleTree.svg)](https://pypi.org)
+[![License](https://img.shields.io/pypi/l/PyAppleTree)](https://pypi.org)
 
 > **Python Runtime Overall Operating Toolkit**
-
 > Analyze, Prepare, Profile, Log, Explain.
+---
 
-## 특징
+**"지루한 숫자 가득한 분석도, 불친절한 에러 로그도 이제 끝났습니다."**  
+PyAppleTree는 AI처럼 똑똑한 수학적 알고리즘으로 의미 있는 병목 구간만 동적으로 진단하고, 상세한 유저 친화적 리포트로 보여주는 파이썬 전용 프로파일링 / 디버깅 툴킷입니다.
 
-- 프로젝트 프로파일링
-    - 파이썬 내장 패키지 `profiling.sampling`을 사용함으로써 이 프로그램은 의존성이 없고, 코드 수정이 필요 없으며, 오버헤드가 매우 적습니다.
-- 번역
-    - 이 프로그램은 뛰어난 번역 기능을 가지고 있습니다.
-    - 이 프로그램은 현재 한국어를 지원합니다. (영어는 아직 지원하지 않습니다.)
+## 핵심 특징
+
+- 상세한 프로파일링 (코드 분석)
+    - 3.15 내장 샘플링 프로파일러 패키지 `profiling.sampling`을 이용해 의존성 설치, 코드 수정, 오버헤드 없이 빠르게 코드를 분석할 수 있습니다.
+    - 유저 친화적인 지능형 상세 리포트를 통해 더 쉽고 빠르게 병목을 찾을 수 있습니다.
+- 유저 친화적 에러 번역 (예정)
+    - 읽기 불편한 영문 에러 메세지를 유저 친화적 문제 해결 방안으로 펼쳐냅니다.
+
+## 왜 PyAppleTree인가요?
+
+- `py-spy`와 대등한 7%의 프로파일링 오버헤드
+    - `profiling.sampling`의 C언어 레벨 구현
+- **유저 친화적** 리포트와 **지능형** 알고리즘
 
 ## 추후 계획
 
 - 영어, 스페인어 등의 지원 추가
-- VSCode 확장 제작
+- VSCode 익스텐션 제작
+- 더욱 많은 계획과 수정 예정 버그, 예정된 기능 등에 대해서는 [추후 계획 문서](./future/future.md)를 확인해 주세요.
+## 설치하기
 
-## 설치
+다음 명령어 중 하나를 실행해 PyAppleTree를 설치하세요.
 
-```
+````{tab-set}
+```{tab-item} pip
+```bash
 pip install PyAppleTree
 ```
 ```
-pip install PyAppleTree==1.0.0a0.dev8
+```{tab-item} pipx
+```bash
+pipx install PyAppleTree
 ```
 ```
-pip install git+https://github.com/seanleeee13/PyAppleTree.git
+```{tab-item} uv
+```bash
+uv tool install PyAppleTree
 ```
+```
+```{tab-item} poetry
+```bash
+poetry self add PyAppleTree
+```
+```
+````
 
-## 사용법
-
-```
-# 기본 모드
-python -m appletree analyze test.py
-```
-```
-# 상세 분석 모드
-python -m appletree analyze -a test.py
-```
+더욱 자세한 내용은 [시작하기 문서](./start/quickstart.md)를 참고해 주세요.
 
 ## 오류 제보 및 기능 제안
 
 불편한 점이나 개선 사항은 https://github.com/seanleeee13/PyAppleTree/issues/new 로 제출해 주세요.
+
+최신 변경사항은 [신규 기능 문서](./update/whatsnew/1.0.0.md)와 [변경 기록 문서](./update/changelog.md)에서 확인할 수 있습니다.
+
+```{toctree}
+:maxdepth: 2
+:caption: 시작하기
+start/quickstart
+start/learn
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: 기능 알아보기
+api/cli/analyze
+```
 
 ```{toctree}
 :maxdepth: 2

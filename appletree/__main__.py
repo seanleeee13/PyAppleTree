@@ -1,4 +1,5 @@
 lazy from .utils import AppleTreeError, AppleTreeVersion
+lazy from .utils import AppleTreeEnum
 lazy from unittest.mock import patch
 lazy from .analyze import _analyze
 lazy from .locales import _
@@ -15,19 +16,13 @@ def is_file(path):
 
 def main(name="appletree"):
     try:
-        commands = ["run", "debug", "analyze"]
-        if len(sys.argv) > 1 and not any(cmd in sys.argv for cmd in commands):
-            for arg in sys.argv[1:]:
-                if arg.startswith(("-h", "--help")):
-                    break
-            else:
-                sys.argv.insert(1, "run")
         if "!json" in sys.argv:
             print(json(sys.argv))
             return
         with patch("argparse._") as mocked_gettext:
             mocked_gettext.side_effect = _
             parser = argparse.ArgumentParser(prog=name, description=_("argp_appletree_desc"))
+            parser.add_argument("-v", "--version", help=_("argp_version"), action="store_true")
             subparsers = parser.add_subparsers(dest="command", help=_("argp_select_mode"))
             run_parser = subparsers.add_parser("run", help=_("argp_run"))
             run_parser.add_argument("file", help=_("argp_file_path"), type=is_file)
@@ -90,9 +85,12 @@ def main(name="appletree"):
                 print(f"[OS] {platform.system()} {platform.release()} [Python] {sys.version.split()[0]} [AppleTree] {AppleTreeVersion}")
                 traceback.print_exc()
         else:
-            with patch("argparse._") as mocked_gettext:
-                mocked_gettext.side_effect = _
-                parser.print_help()
+            if args.version:
+                print(f"PyAppleTree version {AppleTreeEnum.VERSION}")
+            else:
+                with patch("argparse._") as mocked_gettext:
+                    mocked_gettext.side_effect = _
+                    parser.print_help()
     except KeyboardInterrupt:
         pass
 
