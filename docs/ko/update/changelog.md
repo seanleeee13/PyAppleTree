@@ -4,36 +4,46 @@
 
 ### 1.0.0a0.dev8
 
-- Minimized analyze errors
+- `readthedocs`에 문서 생성
+- 재귀함수를 실행의 입구로 판단하는 에러 해결
+- 줄 분석 내용이 함수 분석 내용을 상속하는 문제 해결
+- 줄 분석에서 보여주는 줄의 수를 동적으로 변경하도록 수정
 
 ### 1.0.0a0.dev5, 1.0.0a0.dev6, 1.0.0a0.dev7
 
-- Deleted typo
-- Added more details in README.md
+- 오타 수정
+- `README.md` 내용 추가
 
 ### 1.0.0a0.dev4
 
-- Added license and tags
+- 라이센스 문서 추가
+- 프로젝트 분류 추가
 
 ### 1.0.0a0.dev3
 
-- Redesigned colors
-- Optimized report part
-- Fixed various bugs
-- Firstly uploaded into PYPI
+- 리포트 색 배합 조절
+- 리포트 출력 로직 최적화
+- `pyproject.toml` 추가
+- `KeyboardInterrupt` 발생 에러 해결
+- `PYPI`에 최초 업로드
 
 ### 1.0.0a0.dev2
 
-- Added `advanced` / `lab` mode
-- Classified features
-- Optimizated metrics part
-- Added support for python 3.15.0b2
+- `detailed` 모드를 `advanced` 모드로 바꾸고 `lab` 모드를 추가
+- 주요 기능을 `advanced`와 `lab`으로 분류
+- 수치 계산 로직 최적화
+- `_shutdown` 함수 발생 에러 수정
+- 현재 분석된 1위 에러 수정
+- 실시간 로그 메세지 겹침 문제 해결
+- Python `3.15.0b2` 버전 지원 확장
 
 ### 1.0.0a0.dev1
 
-- Better translation, added readme
-- Merged `analyze` folder into one file
+- `README.md` 생성
+- 번역 퀄리티 향상
+- `analyze` 폴더를 단일 파일로 합성
 
 ### 1.0.0a0.dev0
 
-- First Version
+- 최초 버전
+- `analyze` 기능 추가

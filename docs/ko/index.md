@@ -29,15 +29,53 @@ PyAppleTree는 AI처럼 똑똑한 수학적 알고리즘으로 의미 있는 병
 
 - 영어, 스페인어 등의 지원 추가
 - VSCode 익스텐션 제작
+- 더욱 많은 계획과 수정 예정 버그, 예정된 기능 등에 대해서는 [추후 계획 문서](./future/future.md)를 확인해 주세요.
+## 설치하기
+
+다음 명령어 중 하나를 실행해 PyAppleTree를 설치하세요.
+
+````{tab-set}
+```{tab-item} pip
+```bash
+pip install PyAppleTree
+```
+```
+```{tab-item} pipx
+```bash
+pipx install PyAppleTree
+```
+```
+```{tab-item} uv
+```bash
+uv tool install PyAppleTree
+```
+```
+```{tab-item} poetry
+```bash
+poetry self add PyAppleTree
+```
+```
+````
+
+더욱 자세한 내용은 [시작하기 문서](./start/quickstart.md)를 참고해 주세요.
 
 ## 오류 제보 및 기능 제안
 
 불편한 점이나 개선 사항은 https://github.com/seanleeee13/PyAppleTree/issues/new 로 제출해 주세요.
 
+최신 변경사항은 [신규 기능 문서](./update/whatsnew/1.0.0.md)와 [변경 기록 문서](./update/changelog.md)에서 확인할 수 있습니다.
+
 ```{toctree}
 :maxdepth: 2
 :caption: 시작하기
 start/quickstart
+start/learn
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: 기능 알아보기
+api/cli/analyze
 ```
 
 ```{toctree}

@@ -12,7 +12,7 @@ translate_data = {
     "argp_no_err_translate": "에러 메세지 원문 유지",
     "argp_debug": "파이썬 코드 디버깅",
     "argp_analyze": "파이썬 코드 분석",
-    "argp_advanced_anlz": "<yellow>상세 분석 모드<end> <cyan>(<end><green>-m -a -T<end> <blue>10.0<end><cyan>)<end>",
+    "argp_advanced_anlz": "<yellow>상세 분석 모드<end> <cyan>(<end><green>-m -e -T<end> <blue>10.0<end><cyan>)<end>",
     "argp_lab_anlz": "<blue>실험 기능 체험<end>",
     "argp_without_log": "<green>실행 로그 제거<end>",
     "argp_metrics": "<yellow>상세 통계 표시<end>",
