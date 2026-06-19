@@ -69,6 +69,7 @@ poetry self add PyAppleTree
 ```{toctree}
 :maxdepth: 2
 :caption: 시작하기
+:hidden:
 start/quickstart
 start/learn
 ```
@@ -76,12 +77,14 @@ start/learn
 ```{toctree}
 :maxdepth: 2
 :caption: 기능 알아보기
-api/cli/analyze
+:hidden:
+성능 분석 (appletree analyze) <api/cli/analyze>
 ```
 
 ```{toctree}
 :maxdepth: 2
 :caption: 업데이트 소식
+:hidden:
 update/1.0.0
 update/changelog
 ```

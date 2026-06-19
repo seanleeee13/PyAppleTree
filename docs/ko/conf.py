@@ -1,6 +1,7 @@
 extensions = [
     "myst_parser",
-    "sphinx_tabs.tabs"
+    "sphinx_rtd_theme",
+    "sphinx_design"
 ]
 project = "PyAppleTree"
 copyright = "2026, seanleeeee13"
