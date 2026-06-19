@@ -1,3 +1,11 @@
+from pygments.lexers import get_lexer_by_name
+from sphinx.highlighting import lexers
+
+lexers["pip"] = get_lexer_by_name("bash")
+lexers["pipx"] = get_lexer_by_name("bash")
+lexers["uv"] = get_lexer_by_name("bash")
+lexers["poetry"] = get_lexer_by_name("bash")
+
 extensions = [
     "myst_parser",
     "sphinx_rtd_theme",
