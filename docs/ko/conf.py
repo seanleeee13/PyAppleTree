@@ -23,6 +23,6 @@ author = "seanleeeee13"
 html_theme = "sphinx_rtd_theme"
 source_suffix = {
     ".rst": "restructuredtext",
-    ".md": "myst_parser"
+    ".md": "markdown"
 }
 language = "ko"

@@ -1,8 +1,8 @@
 # PyAppleTree: 유저 친화적 프로파일링 / 디버깅 툴킷
 
-[![PyPI version](https://img.shields.io/pypi/v/PyAppleTree.svg)](https://pypi.org)
-[![Supported Python versions](https://img.shields.io/pypi/pyversions/PyAppleTree.svg)](https://pypi.org)
-[![License](https://img.shields.io/pypi/l/PyAppleTree)](https://pypi.org)
+[![PyPI version](https://img.shields.io/pypi/v/PyAppleTree.svg)](https://pypi.org/project/PyAppleTree/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/PyAppleTree.svg)](https://pypi.org/project/PyAppleTree/)
+[![License](https://img.shields.io/pypi/l/PyAppleTree)](https://pypi.org/project/PyAppleTree/)
 
 > **Python Runtime Overall Operating Toolkit**
 > Analyze, Prepare, Profile, Log, Explain.
@@ -29,32 +29,37 @@ PyAppleTree는 AI처럼 똑똑한 수학적 알고리즘으로 의미 있는 병
 
 - 영어, 스페인어 등의 지원 추가
 - VSCode 익스텐션 제작
-- 더욱 많은 계획과 수정 예정 버그, 예정된 기능 등에 대해서는 [추후 계획 문서](./future/future.md)를 확인해 주세요.
+- 더욱 많은 계획과 수정 예정 버그, 예정된 기능 등에 대해서는 [추후 계획 문서](./update/future.md)를 확인해 주세요.
 
 ## 설치하기
 
 다음 명령어 중 하나를 실행해 PyAppleTree를 설치하세요.
 
 ::::{tab-set-code}
+
 :::{code-block} pip
 pip install PyAppleTree
 :::
+
 :::{code-block} pipx
 pipx install PyAppleTree
 :::
+
 :::{code-block} uv
 uv tool install PyAppleTree
 :::
+
 :::{code-block} poetry
 poetry self add PyAppleTree
 :::
+
 ::::
 
 더욱 자세한 내용은 [시작하기 문서](./start/quickstart.md)를 참고해 주세요.
 
 ## 오류 제보 및 기능 제안
 
-불편한 점이나 개선 사항은 https://github.com/seanleeee13/PyAppleTree/issues/new 로 제출해 주세요.
+불편한 점이나 개선 사항은 https://github.com/seanleeee13/PyAppleTree/issues/new 로 제출해 주세요. ([방법 알아보기](./help/issue.md))
 
 최신 변경사항은 [신규 기능 문서](./update/whatsnew/1.0.0.md)와 [변경 기록 문서](./update/changelog.md)에서 확인할 수 있습니다.
 
@@ -75,8 +80,16 @@ start/learn
 
 ```{toctree}
 :maxdepth: 2
+:caption: 도움말
+:hidden:
+help/issue
+```
+
+```{toctree}
+:maxdepth: 2
 :caption: 업데이트 소식
 :hidden:
-update/1.0.0
+update/whatsnew/1.0.0
+update/future
 update/changelog
 ```
