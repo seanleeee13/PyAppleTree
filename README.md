@@ -8,7 +8,8 @@
 
 > Analyze, Prepare, Profile, Log, Explain.
 
-[Document (with translated readme)](https://pyappletree.readthedocs.io)
+[한국어 문서](https://pyappletree.readthedocs.io/ko/latest/)
+[English Documentation (TODO)](https://pyappletree.readthedocs.io/en/latest/)
 
 ## Features
 
