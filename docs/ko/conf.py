@@ -1,13 +1,7 @@
 extensions = [
     "myst_parser",
     "sphinx_rtd_theme",
-    "sphinx_design"
-]
-myst_enable_extensions = [
-    "colon_fence",
-    "deflist",
-    "fieldlist",
-    "html_image",
+    "sphinx_tabs.tabs"
 ]
 project = "PyAppleTree"
 copyright = "2026, seanleeeee13"

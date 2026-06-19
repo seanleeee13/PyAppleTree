@@ -35,28 +35,23 @@ PyAppleTree는 AI처럼 똑똑한 수학적 알고리즘으로 의미 있는 병
 
 다음 명령어 중 하나를 실행해 PyAppleTree를 설치하세요.
 
-````{tab-set}
-```{tab-item} pip
-```bash
-pip install PyAppleTree
-```
-```
-```{tab-item} pipx
-```bash
-pipx install PyAppleTree
-```
-```
-```{tab-item} uv
-```bash
-uv tool install PyAppleTree
-```
-```
-```{tab-item} poetry
-```bash
-poetry self add PyAppleTree
-```
-```
-````
+.. tabs::
+    .. tab:: pip
+        ```bash
+        pip install PyAppleTree
+        ```
+    .. tab:: pipx
+        ```bash
+        pipx install PyAppleTree
+        ```
+    .. tab:: uv
+        ```bash
+        uv tool install PyAppleTree
+        ```
+    .. tab:: poetry
+        ```bash
+        poetry self add PyAppleTree
+        ```
 
 더욱 자세한 내용은 [시작하기 문서](./start/quickstart.md)를 참고해 주세요.
 
