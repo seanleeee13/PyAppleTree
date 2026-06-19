@@ -4,26 +4,34 @@
 
 다음 명령어 중 하나를 실행해 PyAppleTree를 설치하세요.
 
-::::{tab-set-code}
+::::{tab-set}
 :::{tab-item} pip
+:::{code-block} bash
 ```bash
 pip install PyAppleTree
 ```
 :::
+:::
 :::{tab-item} pipx
+:::{code-block} bash
 ```bash
 pipx install PyAppleTree
 ```
 :::
+:::
 :::{tab-item} uv
+:::{code-block} bash
 ```bash
 uv tool install PyAppleTree
 ```
 :::
+:::
 :::{tab-item} poetry
+:::{code-block} bash
 ```bash
 poetry self add PyAppleTree
 ```
+:::
 :::
 ::::
 
