@@ -1,3 +1,4 @@
+lazy from contextlib import nullcontext
 lazy import traceback
 lazy import tempfile
 lazy import atexit
@@ -56,16 +57,8 @@ def clean(name):
     except:
         pass
 
-class None_open:
-    def __enter__(self):
-        pass
-    def __exit__(self, *args):
-        pass
-    def __bool__(self):
-        return False
-
 def safe_open(filename, mode):
     if not filename or not os.path.exists(filename):
-        return None_open()
+        return nullcontext()
     else:
         return open(filename, mode=mode)

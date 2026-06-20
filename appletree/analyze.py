@@ -1,7 +1,7 @@
 lazy from .utils import tempfile_wrapper, clean, AppleTreeError, safe_open
+lazy from contextlib import redirect_stdout, redirect_stderr, nullcontext
 lazy from profiling.sampling.binary_collector import BinaryCollector
 lazy from profiling.sampling.cli import _handle_run, COLLECTOR_MAP
-lazy from contextlib import redirect_stdout, redirect_stderr
 lazy from collections import Counter
 lazy from unittest.mock import patch
 lazy from .locales import _, _e
@@ -155,7 +155,7 @@ def sample(target_file, input_file, output_file="output.prof", log=True, color=T
         def popen_side_effect(cmd, **kw):
             kw["stdout"] = subprocess.DEVNULL
             kw["stderr"] = w
-            kw["stdin"] = in_f if in_f else subprocess.DEVNULL
+            kw["stdin"] = subprocess.DEVNULL if isinstance(in_f, nullcontext) else in_f
             return Popen(cmd, **kw)
         mocked_popen.side_effect = popen_side_effect
         COLLECTOR_MAP["binary"] = get_prbc(log, color)
